@@ -1,0 +1,801 @@
+#+TITLE: GNU Emacs configuration
+
+* Overview
+External packages set up in this configuration:
+- Solarized color theme
+- AUCTeX
+- ESS
+
+~M-x org-babel-tangle~ in this buffer to generate ~init.el~.
+
+* Configuration
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle yes
+:END:
+** DONE File header
+
+#+BEGIN_SRC emacs-lisp
+  ;; init.el -- configuration file for GNU Emacs
+  ;;
+  ;; Automatically generated, do not edit.
+#+END_SRC
+
+** DONE Packages and paths
+
+Set library paths, file locations, and load Emacs Lisp packages.
+
+#+BEGIN_SRC emacs-lisp
+  (setq load-prefer-newer t)
+
+  (dolist (dir '((expand-file-name "~/.local/share/emacs/site-lisp")
+                 (expand-file-name "lisp" user-emacs-directory)))
+    (add-to-list 'load-path (eval dir)))
+
+  (setq custom-file
+        (expand-file-name "custom.el" user-emacs-directory))
+  (load custom-file)
+
+  (setq custom-theme-directory
+        (expand-file-name "themes" user-emacs-directory))
+
+  ;; automatically added by package.el
+  ;; (package-initialize)
+#+END_SRC
+
+** DONE Locale
+
+- [X] use C locale (en_US) for date and time formats
+
+#+BEGIN_SRC emacs-lisp
+  (setq system-time-locale "C")
+#+END_SRC
+
+** DONE History
+
+*** DONE Minibuffer                                                 :binding:
+
+Minibuffer history:
+
+- [X] keep minibuffer histories
+- [X] ~previous-complete-history-element~ > 
+                                ~M-p~ (~previous-history-element~)
+- [X] ~next-complete-history-element~ > ~M-n~ (~next-history-element~)
+- [X] ~previous-history-element~ > ~C-p~
+- [X] ~next-history-element~ > ~C-n~
+
+#+BEGIN_SRC emacs-lisp
+  (savehist-mode 1)
+  (setq history-length 500)
+  ;; (setq history-delete-duplicates t)
+
+  (let ((map minibuffer-local-map))
+    (define-key map [(meta ?p)] 'previous-complete-history-element)
+    (define-key map [(meta ?n)] 'next-complete-history-element)
+    (define-key map [(control ?p)] 'previous-history-element)
+    (define-key map [(control ?n)] 'next-history-element))
+#+END_SRC
+
+ido history:
+
+- [X] ido-toggle-prefix (C-p) > C-o (open-line)
+- [X] previous-history-element > C-p
+
+#+BEGIN_SRC emacs-lisp
+  (defun remap-ido-toggle-prefix ()
+    (let ((map ido-common-completion-map))
+      (define-key map [(control ?o)] 'ido-toggle-prefix)
+      (define-key map [(control ?p)] 'previous-history-element)))
+
+  (add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
+#+END_SRC
+
+*** DONE Recent files                                               :binding:
+
+- [X] keep list of recently opened files
+- [X] ~recentf-open-files~ > ~C-x C-g~
+
+#+BEGIN_SRC emacs-lisp
+  (require 'recentf)
+  (recentf-mode 1)
+
+  (global-set-key [(control ?x) (control ?g)] 'recentf-open-files)
+#+END_SRC
+
+*** DONE Save place
+
+- [X] jump to last known point position when opening a file
+
+#+BEGIN_SRC emacs-lisp
+  (require 'saveplace)
+  (setq-default save-place t)
+  (setq save-place-limit 5000)
+#+END_SRC
+
+** DONE Auto-saving and backups
+
+- [X] enable auto-saving
+- [X] disable automatic backups
+
+#+BEGIN_SRC emacs-lisp
+  (setq auto-save-default t)
+  (setq auto-save-interval 300)
+  (setq auto-save-timeout 60)
+
+  (setq make-backup-files nil)            ; disable automatic backups
+#+END_SRC
+
+** DONE User interface
+*** DONE Misc
+
+- [X] disable startup screen
+- [X] non-blinking cursor
+- [X] limit size of mini-window
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+  (blink-cursor-mode -1)
+  (setq max-mini-window-height 2)
+#+END_SRC
+
+*** DONE Prompts
+
+- [X] skip confirmation when creating new files/buffers
+- [X] allow "y" and "n" in yes-or-no questions
+- [X] enable visible bell
+
+#+BEGIN_SRC emacs-lisp
+  (setq confirm-nonexistent-file-or-buffer nil)
+  (setq ido-create-new-buffer 'always)
+
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+  (setq visible-bell t)
+#+END_SRC
+
+*** DONE Frame
+
+- [X] set frame title
+- [X] set default frame parameters and layout
+- [X] show buffer boundaries in fringe
+- [X] set background mode according to terminal type
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq frame-title-format "%b - Emacs")
+
+  (dolist (par '((height . 31)
+                 (width . 81)
+                 (vertical-scroll-bars . nil)
+                 (horizontal-scroll-bars . nil)
+                 (menu-bar-lines . 0)
+                 (tool-bar-lines . 0)))
+    (push par default-frame-alist))
+
+  ;; (tool-bar-mode -1)
+  ;; (menu-bar-mode -1)
+  ;; (scroll-bar-mode -1)
+
+  (setq-default
+   indicate-buffer-boundaries
+   '((top . left) (bottom . left) (up . right) (down . right)))
+
+  (setq background-mode '((graphic . light) (tty . light)))
+
+  (defvar background-mode nil
+    "Background-mode property value for frames; a symbol specifying
+  a MODE, either nil, `light' or `dark', or a list with elements
+
+    (TERMINAL-TYPE . MODE)
+
+  where TERMINAL-TYPE is one of `graphic' or `tty'.")
+
+  (defun set-background-mode (&optional frame)
+    "Set FRAME's background-mode property depending on the value of
+  `background-mode'.  If FRAME is nil, set the property on the
+  current frame."
+    (let* ((frame (selected-frame))
+           (graphic-display (display-graphic-p))
+           (terminal-type (if graphic-display 'graphic 'tty))
+           (value (if (listp background-mode)
+                      (cdr (assq terminal-type background-mode))
+                    background-mode)))
+      (set-frame-parameter frame 'background-mode value)
+      (unless graphic-display
+        (set-terminal-parameter frame 'background-mode value))))
+
+  (add-hook 'window-setup-hook 'set-background-mode)
+  (add-hook 'after-make-frame-functions 'set-background-mode)
+#+END_SRC
+
+*** DONE Fonts
+
+- [X] set font
+- [X] set underline style
+- [X] enable file name shadow
+
+#+BEGIN_SRC emacs-lisp
+  (push '(font . "Monospace-12") default-frame-alist)
+
+  (setq x-underline-at-descent-line t)
+
+  (file-name-shadow-mode 1)
+#+END_SRC
+
+*** DONE Themes
+
+**** DONE Solarized
+
+- [X] add support for customizing theme
+- [ ] disable bold faces
+- [X] enable theme
+
+#+BEGIN_SRC emacs-lisp
+  (setq solarized-bold t)
+
+  ;; color names here: http://ethanschoonover.com/solarized
+  (setq solarized-custom-color-definitions
+        '((match   (:foreground base1                   :inverse-video t))
+          (isearch (:foreground cyan   :background back :inverse-video t))
+          ;; (whitespace-tab (:foreground base01 :background base02))
+          (message-cited-text        (:inherit font-lock-comment-face))
+          (message-header-cc         (:inherit font-lock-keyword-face))
+          (message-header-name       (:inherit font-lock-keyword-face))
+          (message-header-newsgroups (:inherit font-lock-keyword-face))
+          (message-header-other      (:inherit font-lock-keyword-face))
+          (message-header-subject    (:inherit font-lock-keyword-face))
+          (message-header-to         (:inherit font-lock-keyword-face))
+          (message-header-xheader    (:inherit font-lock-keyword-face))))
+
+  (defvar solarized-custom-color-definitions nil
+    "A list of face definitions, overriding the theme definitions.
+  Each element is a list of the form
+
+    (FACE SPEC)
+
+  where FACE is a face name, and SPEC is a face specification that
+  can include Solarized colors.")
+
+  (defun solarized-merge-custom-color-definitions (defs)
+    "Update DEFS with new definitions from
+  `solarized-custom-color-definitions' and return the result."
+    (dolist (newdef solarized-custom-color-definitions defs)
+      (setq defs (cons (apply 'create-face-spec newdef)
+                       (assq-delete-all (car newdef) defs)))))
+
+  (advice-add 'solarized-color-definitions :filter-return
+              'solarized-merge-custom-color-definitions)
+
+  (defun solarized-enable (&optional args)
+    "Enable theme Solarized.  Arguments are ignored."
+    (enable-theme 'solarized))
+
+  (add-hook 'after-make-frame-functions 'solarized-enable t)
+  (add-hook 'window-setup-hook 'solarized-enable t)
+
+  (add-to-list 'custom-theme-load-path
+               (expand-file-name "emacs-color-theme-solarized"
+                                 custom-theme-directory))
+
+  (load-theme 'solarized t t)
+#+END_SRC
+
+** DONE Default whitespace style
+
+- [X] only show tabs and trailing space by default
+
+#+BEGIN_SRC emacs-lisp
+  (setq whitespace-style '(face trailing tabs tab-mark))
+#+END_SRC
+
+** DONE Scrolling
+
+- [X] enable "smooth" scrolling
+- [X] preserve screen position
+
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-margin 1
+        scroll-step 1
+        scroll-conservatively 500)
+  (setq scroll-preserve-screen-position t)
+#+END_SRC
+
+** DONE Completion
+*** DONE Completion lists                                           :binding:
+
+- [X] ~previous-completion~ > ~p~
+- [X] ~next-completion~ > ~n~
+- [X] in ido mode: ~switch-to-completions~ > ~M-v~
+
+#+BEGIN_SRC emacs-lisp
+  (let ((map completion-list-mode-map))
+    (define-key map [?p] 'previous-completion)
+    (define-key map [?n] 'next-completion))
+
+  (setq ido-completion-buffer "*Completions*")
+
+  (defun ido-completion-list-binding ()
+    (define-key ido-common-completion-map [(meta ?v)]
+      'switch-to-completions))
+  (add-hook 'ido-setup-hook 'ido-completion-list-binding)
+#+END_SRC
+
+*** DONE Minibuffer completion
+
+- [X] ignore case when completing file/buffer names
+
+#+BEGIN_SRC emacs-lisp
+  (setq read-file-name-completion-ignore-case t)
+  (setq read-buffer-completion-ignore-case t)
+#+END_SRC
+
+ido mode:
+- [X] enable ido mode / ido everywhere
+- [X] conditionally set ido-enable-prefix when reading file and
+  directory names
+- [X] exclude dot files from suggestions
+- [ ] enable flex matching
+- [X] make TAB cycle through suggestions
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ido)
+  (ido-mode 1)
+  (ido-everywhere 1)
+
+  (setq ido-auto-merge-work-directories-length -1)
+  (setq ido-enable-dot-prefix nil)
+  (with-eval-after-load 'ido
+    (add-to-list 'ido-ignore-files "\\`\\."))
+
+  (defvar ido-cur-item)			;prevent compiler warning
+
+  ;; set `ido-enable-prefix' when completing file names
+  (defun ido-enable-prefix-if-file-dir ()
+    (when (or (eq ido-cur-item 'file) (eq ido-cur-item 'dir))
+      (setq ido-enable-prefix t)))
+
+  (add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
+
+  (setq ido-report-no-match nil)
+  ;; (setq ido-enable-flex-matching t)
+  (setq ido-cannot-complete-command 'ido-next-match) ; cycle
+#+END_SRC
+
+*** DONE Symbol completion                                          :binding:
+
+- [X] ~dabbrev-expand~ (~M-/~) > ~M-ç~
+- [X] ~dabbrev-completion~ (~C-M-/~) > ~M-Ç~
+- [ ] ~completion-at-point~ (~C-M-i~, ~M-TAB~) > ~M-ñ~
+- [X] use ~TAB~ for completion in addition to identation
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key [(meta ?ç)] 'dabbrev-expand)
+  (global-set-key [(meta ?Ç)] 'dabbrev-completion)
+  ;; (global-set-key [(meta ?ñ)] 'completion-at-point)
+
+  (setq tab-always-indent 'complete)
+#+END_SRC
+
+** DONE Dired                                                       :binding:
+
+- [X] add support for alternate set of listing switches
+- [X] ~dired-toggle-listing-switches~ > ~{~
+- [X] ~dired-refresh-buffer~ > ~f5~
+
+#+BEGIN_SRC emacs-lisp
+  (require 'dired)
+
+  (define-key dired-mode-map [?{] 'dired-toggle-listing-switches)
+  (define-key dired-mode-map [f5] 'dired-refresh-buffer)
+
+  (setq dired-listing-switches "-hl")
+  (setq dired-listing-switches-alt "-hla")
+
+  (defcustom dired-listing-switches-alt "-l"
+    "Alternate set of switches passed to `ls' for Dired.  Use
+  `dired-toggle-listing-switches' to toggle between these switches
+  and the normal switches in a Dired buffer."
+    :type 'string :group 'dired)
+
+  (defun dired-toggle-listing-switches ()
+    "Toggle between normal listing switches and alternate listing
+  switches in Dired buffers.  See `dired-listing-switches' and
+  `dired-listing-switches-alt'."
+    (interactive)
+    (let* ((state (not (get 'dired-toggle-listing-switches
+                            'saved-state)))
+           (switches (if state
+                         dired-listing-switches-alt
+                       dired-listing-switches)))
+      (put 'dired-toggle-listing-switches 'saved-state state)
+      (if (dired-safe-switches-p switches)
+          (progn
+            (setq dired-actual-switches switches)
+            (revert-buffer))
+        (error "Unsafe switches: \"%s\"" switches))))
+
+  (defun dired-refresh-buffer ()
+    "Refresh Dired buffer without prompting for confirmation."
+    (interactive)
+    (unless (string= major-mode "dired-mode")
+      (error "Not a Dired buffer"))
+    (revert-buffer nil t)
+    (message "Directory listing updated."))
+#+END_SRC
+** DONE Spelling
+
+- [X] use spell-checker ~hunspell~
+- [X] set default dictionary
+
+#+BEGIN_SRC emacs-lisp
+  ;; spelling
+
+  (setq ispell-program-name "hunspell")
+  (ispell-change-dictionary "en_GB" t)    ; default dictionary
+#+END_SRC
+
+** DONE Printing
+
+- [X] set settings for PostScript hardcopies
+
+#+BEGIN_SRC emacs-lisp
+  (setq ps-paper-type 'a4)
+  (setq ps-print-color-p nil)
+  (setq ps-print-header nil)
+  ;; possible fonts: Courier, Helvetica, NewCenturySchlbk, Palatino, Times
+  (setq ps-font-family 'Courier)
+  (setq ps-font-size 10)
+#+END_SRC
+
+** DONE Windows                                                     :binding:
+
+- [X] ~revert-buffer~ > ~f5~
+- [ ] ~other-window~ > ~C-TAB~ (~org-force-cycle-archived~)
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key [f5] 'revert-buffer)
+  ;; (global-set-key [(control tab)] 'other-window)
+#+END_SRC
+
+** TODO Mouse
+
+- [X] make middle-click paste at point position
+
+#+BEGIN_SRC emacs-lisp
+  (setq mouse-yank-at-point t)         ; don't move point when yanking
+  ;; (setq select-active-regions 'only)
+#+END_SRC
+
+** TODO Clipboard
+
+#+BEGIN_SRC emacs-lisp
+  ;; (setq x-select-enable-primary nil)
+  ;; (setq x-select-enable-clipboard t)
+  ;; (setq x-select-enable-clipboard-manager t)
+#+END_SRC
+
+** TODO General editing
+
+*** DONE Motion                                                     :binding:
+
+- [X] double space marks end of sentence
+- [X] ~backward-paragraph~ > ~M-p~
+- [X] ~forward-paragraph~ > ~M-n~
+
+#+BEGIN_SRC emacs-lisp
+  (setq sentence-end-double-space t)
+  (global-set-key [(meta ?n)] 'forward-paragraph)
+  (global-set-key [(meta ?p)] 'backward-paragraph)
+#+END_SRC
+
+*** TODO Mark and region
+
+#+BEGIN_SRC emacs-lisp
+  ;; (transient-mark-mode 1)
+#+END_SRC
+
+*** TODO Formatting paragraphs
+
+- [X] set default value for ~fill-column~
+- [ ] ~unfill-paragraph~
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default fill-column 70)
+
+  ;; (defun unfill-paragraph ()
+  ;;   "Takes a multi-line paragraph and makes it into a single line."
+  ;;   (interactive)
+  ;;   (let ((fill-column (point-max)))
+  ;;     (fill-paragraph nil t)))
+#+END_SRC
+
+*** TODO Comments
+
+- [ ] ~copy-and-comment~
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun copy-and-comment (beg end)
+  ;;   "Insert a copy of the region and comment the original out."
+  ;;   (interactive "r")
+  ;;   (let ((p (copy-marker end)))
+  ;;     (kill-ring-save beg end)
+  ;;     (comment-region beg end)
+  ;;     (goto-char p)
+  ;;     (yank)
+  ;;     (goto-char p)))
+#+END_SRC
+
+*** TODO Line operations
+
+- [ ] ~copy-line~
+- [ ] ~duplicate-line~
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun copy-line (arg)
+  ;;   "Copy lines (as many as prefix argument) in the kill ring"
+  ;;   (interactive "p")
+  ;;   (kill-ring-save (line-beginning-position)
+  ;;                (line-beginning-position (+ 1 arg)))
+  ;;   (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
+
+  ;; ;; http://stackoverflow.com/questions/88399/
+  ;; (defun duplicate-line (arg)
+  ;;   "Duplicate current line, leaving point in lower line."
+  ;;   (interactive "*p")
+  ;;   (setq buffer-undo-list (cons (point) buffer-undo-list))
+  ;;   (let ((bol (save-excursion (beginning-of-line) (point))) eol)
+  ;;     (save-excursion
+  ;;       (end-of-line)
+  ;;       (setq eol (point))
+  ;;       (let ((line (buffer-substring bol eol))
+  ;;          (buffer-undo-list t)
+  ;;          (count arg))
+  ;;      (while (> count 0)
+  ;;        (newline)         ;; because there is no newline in 'line'
+  ;;        (insert line)
+  ;;        (setq count (1- count))))
+  ;;       (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list))))
+  ;;   (next-line arg))
+
+  ;; (global-set-key (kbd "C-c w")   'copy-line)
+  ;; (global-set-key (kbd "C-c d")   'duplicate-line)
+#+END_SRC
+
+*** DONE Killing                                                    :binding:
+
+- [ ] ~kill-line~ at start of line kills whole line
+- [X] ~kill-whole-line~ (~C-S-backspace~) >
+                                 ~C-x C-d~ (~ido-list-directory~)
+- [X] ~delete-indentation~ (~M-^~) > ~M-+~
+- [X] ~delete-horizontal-space~ (~M-\~) > ~M-¡~
+- [X] ~delete-blank-lines~ (~C-x C-o~) > ~M-¿~
+
+#+BEGIN_SRC emacs-lisp
+  ;; (setq kill-whole-line t)
+
+  (global-set-key [(control ?x) (control ?d)] 'kill-whole-line)
+  (global-set-key [(meta ?+)] 'delete-indentation)
+  (global-set-key [(meta ?¡)] 'delete-horizontal-space)
+  (global-set-key [(meta ?¿)] 'delete-blank-lines)
+#+END_SRC
+
+** DONE Indentation
+
+- [X] indent with spaces
+
+#+BEGIN_SRC emacs-lisp
+  (defun indent-style-tabs ()
+    "Set the buffer-local variable `indent-tabs-mode' to t."
+    (interactive)
+    (setq indent-tabs-mode t))
+
+  (defun indent-style-spaces ()
+    "Set the buffer-local variable `indent-tabs-mode' to nil."
+    (interactive)
+    (setq indent-tabs-mode nil))
+
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+** TODO Modes
+*** DONE Default major modes
+
+- [X] set text mode as default mode
+- [X] plain text files (~*.te?xt~) use use org mode
+- [X] compose mail with message mode
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default major-mode 'text-mode)
+
+  (add-to-list 'auto-mode-alist '("\\.te?xt\\'" . org-mode))
+
+  (add-to-list 'magic-mode-alist '("From:" . message-mode))
+#+END_SRC
+
+*** DONE Text mode
+
+- [X] enable auto-filling
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'text-mode-hook 'auto-fill-mode)
+#+END_SRC
+
+*** TODO AUCTeX
+
+#+BEGIN_SRC emacs-lisp
+  (setq TeX-engine 'xetex)
+  (setq TeX-PDF-mode t)
+
+  (setq font-latex-fontify-script nil)
+  (setq font-latex-fontify-sectioning 'color)
+
+  (with-eval-after-load 'tex
+    (when (boundp 'TeX-view-program-selection)
+      (add-to-list 'TeX-view-program-selection '(output-pdf "xdg-open"))))
+
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+
+  ;; (setq TeX-auto-save t)
+  ;; (setq TeX-parse-self t)
+  ;; http://tex.stackexchange.com/questions/124246/
+  ;; (setq LaTeX-command-style
+  ;;       '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
+#+END_SRC
+
+*** TODO Org                                                        :binding:
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-directory (expand-file-name "~/doc/org"))
+  (setq org-default-notes-file
+        (expand-file-name "todo.org" org-directory))
+
+  ;; (global-set-key (kbd "C-c r") 'org-capture)
+
+  (setq org-startup-folded t)
+  (setq org-startup-truncated t)
+  (setq org-startup-indented nil)
+
+  (setq org-adapt-indentation nil)
+
+  (setq org-insert-heading-respect-content t)
+  (setq org-M-RET-may-split-line nil)
+
+  (setq org-footnote-section nil)
+
+  (setq org-export-with-author nil)
+  (setq org-export-with-toc nil)
+  (setq org-export-with-email nil)
+  ;; (setq org-export-with-section-numbers nil)
+  (setq org-export-with-creator nil)
+  (setq org-html-validation-link nil)
+
+  (defvar org-mode-map)                 ; prevent compiler warning
+
+  (defun org-disable-control-tab ()
+    (define-key org-mode-map [(control tab)] nil))
+
+  (add-hook 'org-mode-hook 'org-disable-control-tab)
+#+END_SRC
+
+*** DONE Programming modes
+
+- [X] set ~fill-column~
+- [X] show matching parentheses
+- [X] show white space
+- [X] set file permissions when saving executable scripts
+
+#+BEGIN_SRC emacs-lisp
+  (setq prog-fill-column 76)
+
+  (add-hook 'prog-mode-hook 'prog-set-fill-column)
+  (add-hook 'prog-mode-hook 'show-paren-mode)
+  (add-hook 'prog-mode-hook 'whitespace-mode)
+
+  (add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p)
+
+  (defun prog-set-fill-column ()
+    "Set the buffer-local variable `fill-column' according the
+  value of `prog-fill-column'"
+    (setq fill-column prog-fill-column))
+
+  (defvar prog-fill-column fill-column
+    "Value of `fill-column' in programming modes.")
+#+END_SRC
+
+*** DONE Lisp
+
+- [X] enable eldoc-mode
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lisp-mode-hook 'eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+#+END_SRC
+
+*** TODO Comint
+
+#+BEGIN_SRC emacs-lisp
+  ;; (let ((map comint-mode-map))
+  ;;   (define-key map [(meta) ?p] 'comint-previous-matching-input-from-input)
+  ;;   (define-key map [(meta) ?n] 'comint-next-matching-input-from-input))
+#+END_SRC
+
+*** TODO Python
+
+#+BEGIN_SRC emacs-lisp
+  ;; python mode (use the version bundled with emacs)
+  (when (fboundp 'py-shell) (fmakunbound 'py-shell))
+  (when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
+  (autoload 'python-mode "python" "Python editing mode (python.el)" t)
+#+END_SRC
+
+*** TODO ESS
+
+#+BEGIN_SRC emacs-lisp
+  ;; ess / try to not (require 'ess-site) as it slows down start-up
+  (setq inferior-R-args "--no-save --quiet")
+  (autoload 'R-mode "ess-site.el" "Major mode for editing R source." t)
+  (autoload 'Rd-mode "ess-rd" "Major mode for editing R documentation." t)
+  (add-to-list 'auto-mode-alist '("\\.[rR]\\'" . R-mode))
+  (add-to-list 'auto-mode-alist '("\\.[Rr]out" . R-transcript-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rd\\'" . Rd-mode))
+  (add-to-list 'interpreter-mode-alist '("Rscript" . R-mode))
+  (add-to-list 'interpreter-mode-alist '("r" . R-mode))
+  ;; enable hide-show to allow roxygen comments be un/folded with <TAB>
+  (setq ess-roxy-hide-show-p t)
+#+END_SRC
+
+* Notes
+
+** DONE Key sequence formats
+See section "Key Sequences" in Emacs Lisp Reference manual.  Vector format
+is to be preferred.
+
+*** String format
+- Control and Meta character events: ~\C-~ ~\M-~
+- ~TAB~, ~RET~, ~ESC~, ~DEL~ evencts: ~\t~ ~\r~ ~\e~ ~\d~
+- Alphanumeric characters: ~a~ ~b~ ...
+
+Example: ~"\C-xl"~
+
+Sequences with non-ASCII characters or function keys cannot be represented
+as strings.
+
+*** Vector format
+Key sequences represented as ~[event1 event2 ...]~ where ~eventN~ is
+an event in Lisp form:
+
+- Single characters: ~?a~ ~?b~ ~?c~ ...
+- Event modifiers (escape format): ~\C-~ ~\M-~
+- Event modifiers (in lists): ~meta~ ~control~ ~shift~ ~hyper~ ~super~
+  ~alt~
+- Function keys: ~backspace~ ~tab~ ~newline~ ~return~ ~delete~ ~left~
+  ~up~ ~right~ ~down~ ~f1~ ~f2~ ~f3~ ...
+
+Examples: ~[(control ?x) ?l]~ (same as ~[?\C-x ?l]~), ~[backspace]~,
+~[(hyper left)]~ ...
+
+** TODO Unbound keys
+Unbound keys in ES layout:
+- ~M-+~
+- ~M-¡~
+- ~M-S-¡~
+- ~M-S-'~
+- ~M-ñ~
+- ~M-S-ñ~
+- ~M-ç~
+- ~M-S-ç~
+- ~M-S-<a-z>~
+
+* Footer
+
+#+BEGIN_SRC emacs-lisp
+  ;; Local Variables:
+  ;; eval: (defun write-init-file-and-compile ()
+  ;;         (and (y-or-n-p "Write source and byte-compile? ")
+  ;;              (org-babel-tangle)
+  ;;              (byte-compile-file
+  ;;               (replace-regexp-in-string
+  ;;                "\\.org\\'" ".el" (buffer-file-name)))))
+  ;; eval: (add-hook 'after-save-hook 'write-init-file-and-compile nil t)
+  ;; End:
+#+END_SRC
