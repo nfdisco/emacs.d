@@ -108,7 +108,8 @@ ido history:
 
 #+BEGIN_SRC emacs-lisp
   (require 'saveplace)
-  (setq-default save-place t)
+  ;; (setq-default save-place t)
+  (save-place-mode)
   (setq save-place-limit 5000)
 #+END_SRC
 
@@ -479,9 +480,8 @@ ido mode:
 ** TODO Clipboard
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq x-select-enable-primary nil)
-  ;; (setq x-select-enable-clipboard t)
-  ;; (setq x-select-enable-clipboard-manager t)
+  ;; (setq select-enable-primary nil)
+  ;; (setq select-enable-clipboard t)
 #+END_SRC
 
 ** TODO General editing
@@ -791,11 +791,11 @@ ido mode:
 
 *** DONE Lisp
 
-- [X] enable eldoc-mode
+- [ ] enable eldoc-mode (enabled globally by default in 25.1)
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'lisp-mode-hook 'eldoc-mode)
-  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  ;; (add-hook 'lisp-mode-hook 'eldoc-mode)
+  ;; (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 #+END_SRC
 
 *** TODO Comint
