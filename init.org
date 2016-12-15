@@ -93,13 +93,23 @@ ido history:
 *** DONE Recent files                                               :binding:
 
 - [X] keep list of recently opened files
-- [X] ~recentf-open-files~ > ~C-x C-g~
+- [X] ~recentf-open-files~ > ~C-x g~
 
 #+BEGIN_SRC emacs-lisp
   (require 'recentf)
-  (recentf-mode 1)
+  (recentf-mode)
 
-  (global-set-key [(control ?x) (control ?g)] 'recentf-open-files)
+  (global-set-key [(control ?x) ?g] 'recentf-open-files)
+
+  (setq recentf-max-menu-items 10)
+  (setq recentf-max-saved-items recentf-max-menu-items)
+  (setq recentf-exclude
+        '("\\.ido\\.last\\'"
+          "\\.git/COMMIT_EDITMSG\\'"
+          "/tmp/mutt-[^/]*\\'"
+          "\\.mozilla/firefox/[^/]*\\.default/itsalltext/[^/]*\\.txt"))
+
+  ;; do (recentf-cleanup) to clean up the recent files list manually
 #+END_SRC
 
 *** DONE Save place
