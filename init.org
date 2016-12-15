@@ -619,23 +619,93 @@ ido mode:
   (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-*** TODO AUCTeX
+*** DONE AUCTeX
+
+- [X] use XeTeX by default
+- [X] set default document class options
+- [X] configure default labels
+- [X] disable syntactic comments except in docTeX mode
+- [X] normal ~RET~ key
+- [X] alternative (simpler) syntax highlighting scheme
+- [X] normal font height in scripts and section titles
+- [ ] add support for ~completion-at-point~
+- [X] open PDF output with ~xdg-open~
+- [X] extend list of environments to be folded
+- [X] enable RefTeX minor mode in LaTeX mode
+- [X] enable LaTeX fold minor mode in LaTeX mode
+- [X] enable LaTex math minor mode in LaTeX mode
 
 #+BEGIN_SRC emacs-lisp
   (setq TeX-engine 'xetex)
-  (setq TeX-PDF-mode t)
 
+  (setq LaTeX-default-options "a4paper")
+
+  (setq LaTeX-section-label nil)
+  (with-eval-after-load 'latex
+    (dolist (elt '(("multline"     . LaTeX-equation-label)
+                   ("subequations" . LaTeX-equation-label)))
+      (add-to-list 'LaTeX-label-alist elt)))
+
+  (setq LaTeX-syntactic-comments nil)
+  (add-hook 'docTeX-mode-hook 'LaTeX-enable-syntactic-comments)
+
+  (setq TeX-newline-function 'newline-and-indent)
+
+  ;; (setq TeX-auto-untabify t)
+
+  ;; simpler font locking scheme
+  (setq TeX-install-font-lock 'tex-font-setup)
   (setq font-latex-fontify-script nil)
   (setq font-latex-fontify-sectioning 'color)
 
-  (with-eval-after-load 'tex
-    (when (boundp 'TeX-view-program-selection)
-      (add-to-list 'TeX-view-program-selection '(output-pdf "xdg-open"))))
-
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-
   ;; (setq TeX-auto-save t)
   ;; (setq TeX-parse-self t)
+
+  ;; ;; support symbol completion using standard completion mechanism
+  ;; (defun TeX-set-completion-at-point-functions ()
+  ;;   (setq-local completion-at-point-functions '(TeX-complete-symbol)))
+
+  ;; (add-hook 'TeX-mode-hook 'TeX-set-completion-at-point-functions)
+
+  (add-hook 'TeX-mode-hook 'set-tab-always-indent)
+
+  (with-eval-after-load 'tex
+    (add-to-list 'TeX-view-program-selection '(output-pdf "xdg-open")))
+
+  (defvar TeX-fold-env-spec-list)         ; compiler warning
+
+  (with-eval-after-load 'tex-fold
+    (dolist (elt '("displaymath"
+                   "equation"
+                   "equation*"
+                   "eqnarray"
+                   "eqnarray*"
+                   "subequations"
+                   "gather"
+                   "gather*"
+                   "align"
+                   "align*"
+                   "alignat"
+                   "alignat*"
+                   "flalign"
+                   "flalign*"
+                   "multline"
+                   "multline*"
+                   "figure"
+                   "table"
+                   "thebibliography"
+                   "titlepage"))
+      (add-to-list 'TeX-fold-env-spec-list
+                   `(,(format "[%s]" elt) (,elt)))))
+
+  (add-hook 'LaTeX-mode-hook 'reftex-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+
+  (defun LaTeX-enable-syntactic-comments ()
+    "Set `LaTeX-enable-syntactic-comments' to t in the current buffer."
+    (setq-local LaTeX-syntactic-comments t))
+
   ;; http://tex.stackexchange.com/questions/124246/
   ;; (setq LaTeX-command-style
   ;;       '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
