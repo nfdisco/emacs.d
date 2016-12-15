@@ -754,6 +754,12 @@ ido mode:
     (define-key org-mode-map [(control tab)] nil))
 
   (add-hook 'org-mode-hook 'org-disable-control-tab)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell      . t)))
+
 #+END_SRC
 
 *** DONE Programming modes
