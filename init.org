@@ -25,6 +25,7 @@ External packages set up in this configuration:
 Set library paths, file locations, and load Emacs Lisp packages.
 
 #+BEGIN_SRC emacs-lisp
+  ;; note that this does NOT affect init.el.
   (setq load-prefer-newer t)
 
   (dolist (dir '((expand-file-name "~/.local/share/emacs/site-lisp")
