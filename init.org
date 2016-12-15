@@ -373,6 +373,16 @@ ido mode:
   ;; (global-set-key [(meta ?ñ)] 'completion-at-point)
 
   (setq tab-always-indent 'complete)
+
+  ;; these functions can be used in hooks
+
+  (defun set-tab-indent-complete ()
+    "Set `tab-always-indent' to `complete' in the current buffer."
+    (setq-local tab-always-indent 'complete))
+
+  (defun set-tab-always-indent ()
+    "Set `tab-always-indent' to t in the current buffer."
+    (setq-local tab-always-indent t))
 #+END_SRC
 
 ** DONE Dired                                                       :binding:
