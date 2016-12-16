@@ -66,7 +66,7 @@ Minibuffer history:
 
 #+BEGIN_SRC emacs-lisp
   (savehist-mode 1)
-  (setq history-length 500)
+  (setq history-length 50000)
   ;; (setq history-delete-duplicates t)
 
   (let ((map minibuffer-local-map))
@@ -88,6 +88,30 @@ ido history:
       (define-key map [(control ?p)] 'previous-history-element)))
 
   (add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
+#+END_SRC
+
+*** DONE Search ring
+
+- [X] keep search history
+
+#+BEGIN_SRC elisp
+  (let (vars '(search-ring regexp-search-ring))
+    (if (boundp 'savehist-additional-variables)
+        (dolist (var vars)
+          (add-to-list savehist-additional-variables var))
+      (setq savehist-additional-variables vars)))
+#+END_SRC
+
+*** DONE Kill ring
+
+- [X] keep kill history
+
+#+BEGIN_SRC elisp
+  (let (vars '(kill-ring))
+    (if (boundp 'savehist-additional-variables)
+        (dolist (var vars)
+          (add-to-list savehist-additional-variables var))
+      (setq savehist-additional-variables vars)))
 #+END_SRC
 
 *** DONE Recent files                                               :binding:
