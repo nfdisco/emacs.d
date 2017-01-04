@@ -664,6 +664,165 @@ ido mode:
   (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
+*** DONE PO mode                                                    :binding:
+- [X] turn on ruler mode in subedit buffers
+- [X] add spell-checking support (~po-ispell-msgstr~ > ~i~)
+- [X] add support for file-local variables in the subedit buffer using
+  proxy variables ~po-fill-colum~, ~po-goal-column~,
+  ~po-tab-stop-list~ and ~po-ispell-skip-region-alist~.
+
+#+BEGIN_SRC emacs-lisp
+  (defvar-local po-fill-column fill-column
+    "Value of `fill-column' in subedit buffers.")
+
+  (defvar-local po-goal-column goal-column
+    "Value of `goal-column' in subedit buffers.")
+
+  (defvar-local po-tab-stop-list tab-stop-list
+    "Value of `tab-stop-list' in subedit buffers.")
+
+  (defvar-local po-language nil
+    "Language code of the current buffer.
+
+  An appropriate dictionary for checking spelling errors in message
+  strings is chosen according to the value of this variable.
+
+  Changing the value of this variable has no immediate effect.  To
+  change the spell-checking dictionary for this buffer, use M-x
+  `po-change-dictionary' instead.")
+
+  (defvar-local po-ispell-dictionary nil
+    "Ispell dictionary to use in subedit buffers.")
+
+  (defvar po-ispell-dictionary-alist nil
+    "A list of the form ((LANG . DICT) ...) mapping language codes
+  to dictionary names.")
+
+  (defvar-local po-enable-ruler-mode nil
+    "Whether to enable `ruler-mode' in subedit buffers.")
+
+  ;; must not be nil due to a bug
+  (defvar po-ispell-skip-region-alist nil
+    "Value of `ispell-skip-region-alist' in subedit buffers.")
+
+  ;; format string placeholders
+  (add-to-list 'po-ispell-skip-region-alist
+               '("%\\([0-9]+$\\)?\\([-+ 0#]\\)?\\([0-9]+|\\*\\)?\\(\\.\\(?:[0-9]\\|\\*\\)\\)?\\([hlLzht]\\|hh\\|ll\\)?[%diufFeEgGxXoscpAn]"))
+
+  ;; skip leading/trailing/standalone dashes and command switches
+  (add-to-list 'po-ispell-skip-region-alist
+               '("\\(\\W\\|\\`\\)[-+]\\(\\W\\|[[:alnum:]]+\\|\\'\\)"))
+
+  ;; skip apostrophes at word boundaries
+  ;; (add-to-list 'po-ispell-skip-region-alist '("\\(\\W\\|\\`\\)[']"))
+  ;; (add-to-list 'po-ispell-skip-region-alist '("[']\\(\\W\\|\\'\\)"))
+
+  (make-variable-buffer-local 'po-ispell-skip-region-alist)
+
+
+  (setq po-auto-edit-with-msgid t)
+  (setq-default po-enable-ruler-mode t)
+  (setq po-ispell-dictionary-alist '(("ca" . "ca_ES")))
+
+
+  (defvar po-entry-type)
+
+  (defun po-ispell-msgstr ()
+    "Check message string for spelling errors."
+    (interactive)
+    (let ((buffer (concat "*" (buffer-name) "*"))
+          po-ispell-user-interacted)
+      (po-find-span-of-entry)
+      (if (eq po-entry-type 'untranslated)
+          (message "Ignoring untranslated entry.")
+        (save-window-excursion (po-edit-msgstr))
+        (when (get-buffer buffer)
+          (set-buffer buffer)
+          (add-hook 'ispell-update-post-hook
+                    `(lambda ()
+                       (pop-to-buffer ,buffer)
+                       (setq po-ispell-user-interacted t))
+                    t t)
+          (ispell-buffer)
+          (if po-ispell-user-interacted
+              (progn
+                (pop-to-buffer buffer)
+                (message po-subedit-message))
+            (po-subedit-abort))))))
+
+  (with-eval-after-load 'po-mode
+    (define-key po-mode-map [?i] 'po-ispell-msgstr))
+
+  (defun po-change-dictionary (&optional dict)
+    "Change spell-checking dictionary."
+    (interactive
+     (list (completing-read
+            "Use dictionary (RET for current, SPC to complete): "
+            (and (fboundp 'ispell-valid-dictionary-list)
+                 (mapcar 'list (ispell-valid-dictionary-list)))
+            nil t)))
+    (setq po-ispell-dictionary dict))
+
+  (defun po-set-dictionary (&optional force)
+    "Set `po-ispell-dictionary' according to the value of
+  `po-language'; guess the target language if `po-language' is
+  nil."
+    (when (or (not po-ispell-dictionary) force)
+      (let* ((lang (or po-language (po-guess-language)))
+             (dict (when (boundp 'po-ispell-dictionary-alist)
+                     (cdr (assoc lang po-ispell-dictionary-alist)))))
+        (cond ((not lang)
+               (message "could not guess language"))
+              ((not dict)
+               (message "no known dictionaries for language \"%s\"" lang)))
+        (unless dict
+          (setq dict ispell-local-dictionary))
+        (setq po-ispell-dictionary dict))))
+
+  (add-hook 'po-mode-hook 'po-set-dictionary)
+
+  (defun po-guess-language ()
+    "Guess the target language of the current PO file."
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (unless (re-search-forward
+                 po-any-msgstr-block-regexp nil t)
+          (error "no entries found"))
+        (goto-char (match-beginning 0))
+        (save-window-excursion
+          (po-edit-msgstr)
+          (let ((lang
+                 (when (re-search-forward
+                        "^Language:[[:blank:]]+\\([[:alnum:]]+\\)<?$"
+                        nil t)
+                   (po-match-string 1))))
+            (po-subedit-abort)
+            lang)))))
+
+  (defun po-set-subedit-buffer-variables ()
+    "Set variables according to the buffer-local value of the
+  corresponding po-* variable in the main buffer."
+    (let ((buffer (get-buffer (substring (buffer-name) 1 -1))))
+      (when buffer
+        (make-local-variable 'ispell-skip-region-alist)
+        (dolist (elt '((po-fill-column . fill-column)
+                       (po-goal-column . goal-column)
+                       (po-tab-stop-list . tab-stop-list)
+                       (po-ispell-skip-region-alist . ispell-skip-region-alist)
+                       (po-ispell-dictionary . ispell-local-dictionary)))
+          (set (cdr elt) (buffer-local-value (car elt) buffer))))))
+
+  (add-hook 'po-subedit-mode-hook 'po-set-subedit-buffer-variables)
+
+  (defun po-enable-ruler-mode-maybe ()
+    "Enable `ruler-mode' if `po-enable-ruler-mode' is non-nil."
+    (when po-enable-ruler-mode (ruler-mode)))
+
+  (add-hook 'po-subedit-mode-hook 'po-enable-ruler-mode-maybe)
+#+END_SRC
+
 *** DONE AUCTeX
 
 - [X] use XeTeX by default
