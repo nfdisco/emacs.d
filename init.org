@@ -847,6 +847,9 @@ ido mode:
   (setq LaTeX-default-options "a4paper")
 
   (setq LaTeX-section-label nil)
+
+  (defvar LaTeX-label-alist)
+
   (with-eval-after-load 'latex
     (dolist (elt '(("multline"     . LaTeX-equation-label)
                    ("subequations" . LaTeX-equation-label)))
@@ -874,6 +877,8 @@ ido mode:
   ;; (add-hook 'TeX-mode-hook 'TeX-set-completion-at-point-functions)
 
   (add-hook 'TeX-mode-hook 'set-tab-always-indent)
+
+  (defvar TeX-view-program-selection)
 
   (with-eval-after-load 'tex
     (add-to-list 'TeX-view-program-selection '(output-pdf "xdg-open")))
