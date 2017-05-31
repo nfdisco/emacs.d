@@ -721,6 +721,11 @@ ido mode:
 
   (make-variable-buffer-local 'po-ispell-skip-region-alist)
 
+  (put 'po-fill-column 'safe-local-variable 'integerp)
+  (put 'po-goal-column 'safe-local-variable 'integerp)
+  (put 'po-tab-stop-list 'safe-local-variable 'listp)
+  (put 'po-language 'safe-local-variable 'stringp)
+  (put 'po-enable-ruler-mode 'safe-local-variable 'booleanp)
 
   (setq po-auto-edit-with-msgid t)
   (setq-default po-enable-ruler-mode t)
