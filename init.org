@@ -166,11 +166,13 @@ ido history:
 - [X] disable startup screen
 - [X] non-blinking cursor
 - [X] limit size of mini-window
+- [X] show column number in mode line
 
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (blink-cursor-mode -1)
   (setq max-mini-window-height 2)
+  (column-number-mode 1)
 #+END_SRC
 
 *** DONE Prompts
