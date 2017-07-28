@@ -944,6 +944,11 @@ Put capture and structure templates in a separate file; or set this to
 nil to use the customize interface instead.
 
 #+BEGIN_SRC emacs-lisp
+(defvar org-templates-file nil
+  "Path to a file with template definitions for org-mode.
+The file will be loaded by init.el with `load-file', unless the
+value of this variable is `nil'.")
+
 (setq org-templates-file
       (expand-file-name "org-templates.el" user-emacs-directory))
 #+END_SRC
