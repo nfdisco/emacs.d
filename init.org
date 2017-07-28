@@ -929,45 +929,117 @@ ido mode:
   ;;       '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
 #+END_SRC
 
-*** TODO Org                                                        :binding:
+*** DONE Org                                                        :binding:
+
+Default locations of org files and other files used by org-mode.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-directory (expand-file-name "~/doc/org"))
-  (setq org-default-notes-file
-        (expand-file-name "todo.org" org-directory))
+(setq org-directory (expand-file-name "~/doc/org"))
+(setq org-default-notes-file "todo.org")
+(setq org-agenda-files (expand-file-name "agenda-files" org-directory))
+(setq org-archive-location "%s-archive::")
+#+END_SRC
 
-  ;; (global-set-key (kbd "C-c r") 'org-capture)
+Put capture and structure templates in a separate file; or set this to
+nil to use the customize interface instead.
 
-  (setq org-startup-folded t)
-  (setq org-startup-truncated t)
-  (setq org-startup-indented nil)
+#+BEGIN_SRC emacs-lisp
+(setq org-templates-file
+      (expand-file-name "org-templates.el" user-emacs-directory))
+#+END_SRC
 
-  (setq org-adapt-indentation nil)
+Startup settings.
 
-  (setq org-insert-heading-respect-content t)
-  (setq org-M-RET-may-split-line nil)
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-folded t)
+(setq org-startup-truncated t)
+#+END_SRC
 
-  (setq org-footnote-section nil)
+Turn off all indentation virtual or real.
 
-  (setq org-export-with-author nil)
-  (setq org-export-with-toc nil)
-  (setq org-export-with-email nil)
-  ;; (setq org-export-with-section-numbers nil)
-  (setq org-export-with-creator nil)
-  (setq org-html-validation-link nil)
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-indented nil)
+(setq org-adapt-indentation nil)
+#+END_SRC
 
-  (defvar org-mode-map)                 ; prevent compiler warning
+Lessen visual clutter.  Restart =font-lock-mode= if you change these.
 
-  (defun org-disable-control-tab ()
-    (define-key org-mode-map [(control tab)] nil))
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-emphasis-markers t)
+(setq org-hide-leading-stars t)
+#+END_SRC
 
-  (add-hook 'org-mode-hook 'org-disable-control-tab)
+Settings for inserting new headings or items.  Must experiment to find
+optimal values.
 
+#+BEGIN_SRC emacs-lisp
+;; (setq org-M-RET-may-split-line t)
+;; (setq org-insert-heading-respect-content t)
+#+END_SRC
+
+Place footnotes at the end of the current section.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-footnote-section nil)
+#+END_SRC
+
+Don't mess about with the indentation of source code blocks.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-src-preserve-indentation t)
+#+END_SRC
+
+Allow evaluation of Emacs Lisp and Unix shell blocks.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'org
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
-     (shell      . t)))
+     (shell      . t))))
+#+END_SRC
 
+Log change to "done" state and enforce todo states dependencies.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-enforce-todo-dependencies t)
+(setq org-enforce-todo-checkbox-dependencies t)
+(setq org-log-done 'time)
+#+END_SRC
+
+Load templates.
+
+#+BEGIN_SRC emacs-lisp
+(when (and org-templates-file
+           (file-exists-p org-templates-file))
+  (load-file org-templates-file))
+#+END_SRC
+
+Set global capture key.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [(control ?c) ?c] 'org-capture)
+#+END_SRC
+
+General export settings.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-with-author nil)
+(setq org-export-with-creator nil)
+(setq org-export-with-date nil)
+(setq org-export-with-email nil)
+(setq org-export-with-toc nil)
+#+END_SRC
+
+Disable C-TAB?
+
+#+BEGIN_SRC emacs-lisp
+;; (defvar org-mode-map)                 ; prevent compiler warning
+
+;; (defun org-disable-control-tab ()
+;;   (define-key org-mode-map [(control tab)] nil))
+
+;; (add-hook 'org-mode-hook 'org-disable-control-tab)
 #+END_SRC
 
 *** DONE Programming modes

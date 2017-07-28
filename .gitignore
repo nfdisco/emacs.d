@@ -12,3 +12,6 @@ init.html
 places
 recentf
 filesets-cache.el
+elpa
+org-templates.el
+slime
