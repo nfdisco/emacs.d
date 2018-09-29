@@ -627,6 +627,28 @@ ido mode:
   (global-set-key [(meta ?¿)] 'delete-blank-lines)
 #+END_SRC
 
+** DONE Mail
+
+*** DONE General settings
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Ernest Adrogué")
+(setq user-mail-address "nr9@posteo.de")
+(setq mail-from-style 'parens)
+#+END_SRC
+
+*** DONE Outgoing mail
+
+#+BEGIN_SRC emacs-lisp
+(require 'smtpmail)
+(setq send-mail-function 'smtpmail-send-it)
+(setq message-send-mail-function 'message-smtpmail-send-it)
+(setq smtpmail-default-smtp-server "posteo.de")
+(setq smtpmail-smtp-server "posteo.de")
+(setq smtpmail-smtp-service 465)
+(setq smtpmail-stream-type 'ssl)
+#+END_SRC
+
 ** DONE Indentation
 
 - [X] indent with spaces
