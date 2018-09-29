@@ -252,7 +252,7 @@ ido history:
 - [X] enable file name shadow
 
 #+BEGIN_SRC emacs-lisp
-  (push '(font . "Monospace-12") default-frame-alist)
+  (push '(font . "Monospace-11") default-frame-alist)
 
   (setq x-underline-at-descent-line t)
 
