@@ -233,28 +233,31 @@ Jump to last known point position when opening a file.
 (setq save-place-limit 5000)
 #+END_SRC
 
-*** DONE Recent files                                               :binding:
+** Recent files
 
-- [X] keep list of recently opened files
-- [X] ~recentf-open-files~ > ~C-x g~
+Uncomment to keep a list of recently opened files.  Type ~M-x
+(recentf-cleanup)~ to clean up the list of recent files manually (i.e.,
+to remove duplicates, excluded files, and so on, from the list).
 
 #+BEGIN_SRC emacs-lisp
-(require 'recentf)
-(recentf-mode)
+;; (require 'recentf)
+;; (recentf-mode)
 
-(global-set-key [(control ?x) ?g] 'recentf-open-files)
-
-(setq recentf-max-menu-items 10)
-(setq recentf-max-saved-items recentf-max-menu-items)
-(setq recentf-exclude
-      '("\\.ido\\.last\\'"
-        "\\.git/COMMIT_EDITMSG\\'"
-        "/tmp/mutt-[^/]*\\'"
-        "\\.mozilla/firefox/[^/]*\\.default/itsalltext/[^/]*\\.txt"))
-
-;; do (recentf-cleanup) to clean up the recent files list manually
+;; (setq recentf-max-menu-items 10)
+;; (setq recentf-max-saved-items recentf-max-menu-items)
+;; (setq recentf-exclude
+;;       '("\\.ido\\.last\\'"
+;;         "\\.git/COMMIT_EDITMSG\\'"
+;;         "/tmp/mutt-[^/]*\\'"
+;;         "\\.mozilla/firefox/[^/]*\\.default/itsalltext/[^/]*\\.txt"))
 #+END_SRC
 
+Type ~M-x recentf-open-files~ to open the recent files buffer.
+Currently unbound because ~C-x g~ is used by Magit.
+
+#+BEGIN_SRC emacs-lisp
+;; (global-set-key [(control ?x) ?g] 'recentf-open-files)
+#+END_SRC
 
 ** DONE User interface
 *** DONE Misc
