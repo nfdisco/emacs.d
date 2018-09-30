@@ -17,35 +17,146 @@ Non-built-in packages that are set up here:
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle yes
 :END:
-** DONE File header
+
+** Preamble
 
 #+BEGIN_SRC emacs-lisp
 ;; init.el -- configuration file for GNU Emacs
 ;;
 ;; Automatically generated, do not edit.
-#+END_SRC
-
-** DONE Packages and paths
-
-Set library paths, file locations, and load Emacs Lisp packages.
-
-#+BEGIN_SRC emacs-lisp
-;; note that this does NOT affect init.el.
-(setq load-prefer-newer t)
-
-(dolist (dir '((expand-file-name "~/.local/share/emacs/site-lisp")
-               (expand-file-name "lisp" user-emacs-directory)))
-  (add-to-list 'load-path (eval dir)))
-
-(setq custom-file
-      (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-
-(setq custom-theme-directory
-      (expand-file-name "themes" user-emacs-directory))
 
 ;; automatically added by package.el
 ;; (package-initialize)
+#+END_SRC
+
+** Global variables and constants
+
+#+BEGIN_SRC emacs-lisp
+(defconst windows-system (eq system-type 'windows-nt)
+  "Non-nil if Emacs is running on a Microsoft Windows operating system.")
+#+END_SRC
+
+** Auxiliary files and library locations
+
+Look for Lisp packages in ~$XDG_DATA_HOME/emacs/site-lisp~ (on Windows:
+~%appdata%/emacs/site-lisp~) and in the ~lisp/~ subdirectory under the
+user's Emacs directory.
+
+#+BEGIN_SRC emacs-lisp
+(let ((data-dir
+       (if windows-system
+           (getenv "appdata")
+         (or (getenv "XDG_DATA_HOME")
+             (expand-file-name "~/.local/share")))))
+  (if (or (not (stringp data-dir))
+          (string= data-dir ""))
+      (message "Could not determine location of user's data directory")
+    (add-to-list 'load-path
+                 (concat (file-name-as-directory data-dir)
+                         (file-name-as-directory "emacs")
+                         "site-lisp"))))
+
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+#+END_SRC
+
+Prevent Emacs from loading obselete bytecode files (although this will
+not prevent Emacs from loading an obsolete ~./init.elc~).
+
+#+BEGIN_SRC emacs-lisp
+(setq load-prefer-newer t)
+#+END_SRC
+
+** Customizations
+
+Save customizations in a separate file.
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+#+END_SRC
+
+Load existing customizations.
+#+BEGIN_SRC emacs-lisp
+(load custom-file)
+#+END_SRC
+
+** Themes
+
+Look for and save custom themes in the ~themes/~ subdirectory under the
+user's Emacs directory.
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
+#+END_SRC
+
+*** Solarized
+
+Add the location of the theme's subdirectory to the search path.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "solarized" custom-theme-directory))
+#+END_SRC
+
+Override face difinitions with our own.  For the color names used by
+this theme see: [[http://ethanschoonover.com/solarized]]
+
+#+BEGIN_SRC emacs-lisp
+(defvar solarized-custom-color-definitions nil
+  "A list of face definitions, overriding the theme definitions.
+  Each element is a list of the form
+
+    (FACE SPEC)
+
+  where FACE is a face name, and SPEC is a face specification that
+  can include Solarized colors.")
+
+(defun solarized-merge-custom-color-definitions (defs)
+  "Update DEFS with new definitions from
+  `solarized-custom-color-definitions' and return the result."
+  (dolist (newdef solarized-custom-color-definitions defs)
+    (setq defs (cons (apply 'create-face-spec newdef)
+                     (assq-delete-all (car newdef) defs)))))
+
+(advice-add 'solarized-color-definitions :filter-return
+            'solarized-merge-custom-color-definitions)
+
+(setq solarized-custom-color-definitions
+      '((match   (:foreground base1                   :inverse-video t))
+        (isearch (:foreground cyan   :background back :inverse-video t))
+        ;; (whitespace-tab (:foreground base01 :background base02))
+        (message-cited-text        (:inherit font-lock-comment-face))
+        (message-header-cc         (:inherit font-lock-keyword-face))
+        (message-header-name       (:inherit font-lock-keyword-face))
+        (message-header-newsgroups (:inherit font-lock-keyword-face))
+        (message-header-other      (:inherit font-lock-keyword-face))
+        (message-header-subject    (:inherit font-lock-keyword-face))
+        (message-header-to         (:inherit font-lock-keyword-face))
+        (message-header-xheader    (:inherit font-lock-keyword-face))
+        (gnus-header-content       (:inherit font-lock-keyword-face))
+        (gnus-header-from          (:inherit font-lock-keyword-face))
+        (gnus-header-name          (:inherit font-lock-keyword-face))
+        (gnus-header-newsgroups    (:inherit font-lock-keyword-face))
+        (gnus-header-subject       (:inherit font-lock-keyword-face))))
+#+END_SRC
+
+Allow bold fonts.
+
+#+BEGIN_SRC emacs-lisp
+(setq solarized-bold t)
+#+END_SRC
+
+Enable theme.
+
+#+BEGIN_SRC emacs-lisp
+(defun solarized-enable (&optional args)
+  "Enable theme Solarized.  Arguments are ignored."
+  (enable-theme 'solarized))
+
+(add-hook 'after-make-frame-functions 'solarized-enable t)
+(add-hook 'window-setup-hook 'solarized-enable t)
+
+;; this should come at the very end
+(load-theme 'solarized t t)
 #+END_SRC
 
 ** DONE Locale
@@ -265,66 +376,6 @@ ido history:
 
 *** DONE Themes
 
-**** DONE Solarized
-
-- [X] add support for customizing theme
-- [ ] disable bold faces
-- [X] enable theme
-
-#+BEGIN_SRC emacs-lisp
-(setq solarized-bold t)
-
-;; color names here: http://ethanschoonover.com/solarized
-(setq solarized-custom-color-definitions
-      '((match   (:foreground base1                   :inverse-video t))
-        (isearch (:foreground cyan   :background back :inverse-video t))
-        ;; (whitespace-tab (:foreground base01 :background base02))
-        (message-cited-text        (:inherit font-lock-comment-face))
-        (message-header-cc         (:inherit font-lock-keyword-face))
-        (message-header-name       (:inherit font-lock-keyword-face))
-        (message-header-newsgroups (:inherit font-lock-keyword-face))
-        (message-header-other      (:inherit font-lock-keyword-face))
-        (message-header-subject    (:inherit font-lock-keyword-face))
-        (message-header-to         (:inherit font-lock-keyword-face))
-        (message-header-xheader    (:inherit font-lock-keyword-face))
-        (gnus-header-content       (:inherit font-lock-keyword-face))
-        (gnus-header-from          (:inherit font-lock-keyword-face))
-        (gnus-header-name          (:inherit font-lock-keyword-face))
-        (gnus-header-newsgroups    (:inherit font-lock-keyword-face))
-        (gnus-header-subject       (:inherit font-lock-keyword-face))))
-
-(defvar solarized-custom-color-definitions nil
-  "A list of face definitions, overriding the theme definitions.
-  Each element is a list of the form
-
-    (FACE SPEC)
-
-  where FACE is a face name, and SPEC is a face specification that
-  can include Solarized colors.")
-
-(defun solarized-merge-custom-color-definitions (defs)
-  "Update DEFS with new definitions from
-  `solarized-custom-color-definitions' and return the result."
-  (dolist (newdef solarized-custom-color-definitions defs)
-    (setq defs (cons (apply 'create-face-spec newdef)
-                     (assq-delete-all (car newdef) defs)))))
-
-(advice-add 'solarized-color-definitions :filter-return
-            'solarized-merge-custom-color-definitions)
-
-(defun solarized-enable (&optional args)
-  "Enable theme Solarized.  Arguments are ignored."
-  (enable-theme 'solarized))
-
-(add-hook 'after-make-frame-functions 'solarized-enable t)
-(add-hook 'window-setup-hook 'solarized-enable t)
-
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "emacs-color-theme-solarized"
-                               custom-theme-directory))
-
-(load-theme 'solarized t t)
-#+END_SRC
 
 ** DONE Default whitespace style
 
