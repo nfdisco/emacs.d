@@ -168,6 +168,22 @@ time formats.
 (setq system-time-locale "C")
 #+END_SRC
 
+** Auto-saving and backups
+
+Enable auto-saving.
+
+#+BEGIN_SRC emacs-lisp
+(setq auto-save-default t)
+(setq auto-save-interval 300)
+(setq auto-save-timeout 60)
+#+END_SRC
+
+Disable automatic backups.
+
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+#+END_SRC
+
 ** DONE History
 
 *** DONE Minibuffer                                                 :binding:
@@ -262,19 +278,6 @@ ido history:
 ;; (setq-default save-place t)
 (save-place-mode)
 (setq save-place-limit 5000)
-#+END_SRC
-
-** DONE Auto-saving and backups
-
-- [X] enable auto-saving
-- [X] disable automatic backups
-
-#+BEGIN_SRC emacs-lisp
-(setq auto-save-default t)
-(setq auto-save-interval 300)
-(setq auto-save-timeout 60)
-
-(setq make-backup-files nil)            ; disable automatic backups
 #+END_SRC
 
 ** DONE User interface
