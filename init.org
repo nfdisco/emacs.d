@@ -184,48 +184,17 @@ Disable automatic backups.
 (setq make-backup-files nil)
 #+END_SRC
 
-** DONE History
+** History
 
-*** DONE Minibuffer                                                 :binding:
-
-Minibuffer history:
-
-- [X] keep minibuffer histories
-- [X] ~previous-complete-history-element~ > 
-                                ~M-p~ (~previous-history-element~)
-- [X] ~next-complete-history-element~ > ~M-n~ (~next-history-element~)
-- [X] ~previous-history-element~ > ~C-p~
-- [X] ~next-history-element~ > ~C-n~
+Remember minibuffer input across sessions.
 
 #+BEGIN_SRC emacs-lisp
 (savehist-mode 1)
 (setq history-length 50000)
 ;; (setq history-delete-duplicates t)
-
-(let ((map minibuffer-local-map))
-  (define-key map [(meta ?p)] 'previous-complete-history-element)
-  (define-key map [(meta ?n)] 'next-complete-history-element)
-  (define-key map [(control ?p)] 'previous-history-element)
-  (define-key map [(control ?n)] 'next-history-element))
 #+END_SRC
 
-ido history:
-
-- [X] ido-toggle-prefix (C-p) > C-o (open-line)
-- [X] previous-history-element > C-p
-
-#+BEGIN_SRC emacs-lisp
-(defun remap-ido-toggle-prefix ()
-  (let ((map ido-common-completion-map))
-    (define-key map [(control ?o)] 'ido-toggle-prefix)
-    (define-key map [(control ?p)] 'previous-history-element)))
-
-(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
-#+END_SRC
-
-*** DONE Search ring
-
-- [X] keep search history
+Remember search strings across sessions.
 
 #+BEGIN_SRC elisp
 (let (vars '(search-ring regexp-search-ring))
@@ -235,16 +204,33 @@ ido history:
     (setq savehist-additional-variables vars)))
 #+END_SRC
 
-*** DONE Kill ring
+Use ~C-p~, ~C-n~, ~M-p~ and ~M-n~ to navigate through minibuffer history while
+in the minibuffer.
 
-- [X] keep kill history
+#+BEGIN_SRC emacs-lisp
+(let ((map minibuffer-local-map))
+  (define-key map [(meta ?p)] 'previous-complete-history-element)
+  (define-key map [(meta ?n)] 'next-complete-history-element)
+  (define-key map [(control ?p)] 'previous-history-element)
+  (define-key map [(control ?n)] 'next-history-element))
+#+END_SRC
+
+Uncomment the following to save the kill ring across sessions.
 
 #+BEGIN_SRC elisp
-(let (vars '(kill-ring))
-  (if (boundp 'savehist-additional-variables)
-      (dolist (var vars)
-        (add-to-list savehist-additional-variables var))
-    (setq savehist-additional-variables vars)))
+;; (let (vars '(kill-ring))
+;;   (if (boundp 'savehist-additional-variables)
+;;       (dolist (var vars)
+;;         (add-to-list savehist-additional-variables var))
+;;     (setq savehist-additional-variables vars)))
+#+END_SRC
+
+Jump to last known point position when opening a file.
+
+#+BEGIN_SRC emacs-lisp
+(require 'saveplace)
+(save-place-mode)
+(setq save-place-limit 5000)
 #+END_SRC
 
 *** DONE Recent files                                               :binding:
@@ -269,16 +255,6 @@ ido history:
 ;; do (recentf-cleanup) to clean up the recent files list manually
 #+END_SRC
 
-*** DONE Save place
-
-- [X] jump to last known point position when opening a file
-
-#+BEGIN_SRC emacs-lisp
-(require 'saveplace)
-;; (setq-default save-place t)
-(save-place-mode)
-(setq save-place-limit 5000)
-#+END_SRC
 
 ** DONE User interface
 *** DONE Misc
@@ -378,9 +354,6 @@ ido history:
 (file-name-shadow-mode 1)
 #+END_SRC
 
-*** DONE Themes
-
-
 ** DONE Default whitespace style
 
 - [X] only show tabs and trailing space by default
@@ -460,6 +433,20 @@ ido mode:
 (setq ido-report-no-match nil)
 ;; (setq ido-enable-flex-matching t)
 (setq ido-cannot-complete-command 'ido-next-match) ; cycle
+#+END_SRC
+
+ido history:
+
+- [X] ido-toggle-prefix (C-p) > C-o (open-line)
+- [X] previous-history-element > C-p
+
+#+BEGIN_SRC emacs-lisp
+(defun remap-ido-toggle-prefix ()
+  (let ((map ido-common-completion-map))
+    (define-key map [(control ?o)] 'ido-toggle-prefix)
+    (define-key map [(control ?p)] 'previous-history-element)))
+
+(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
 #+END_SRC
 
 *** DONE Symbol completion                                          :binding:
