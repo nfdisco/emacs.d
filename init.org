@@ -159,9 +159,10 @@ Enable theme.
 (load-theme 'solarized t t)
 #+END_SRC
 
-** DONE Locale
+** Locale
 
-- [X] use C locale (en_US) for date and time formats
+Instead of the current locale, use the C locale (en_US) for date and
+time formats.
 
 #+BEGIN_SRC emacs-lisp
 (setq system-time-locale "C")
