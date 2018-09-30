@@ -1,12 +1,17 @@
 #+TITLE: GNU Emacs configuration
 
 * Overview
-External packages set up in this configuration:
+Personal GNU Emacs configuration file.
+
+Type ~M-x org-babel-tangle~ in this buffer to generate ~init.el~.
+
+Non-built-in packages that are set up here:
 - Solarized color theme
+- Org-mode
+- PO-mode
 - AUCTeX
 - ESS
-
-~M-x org-babel-tangle~ in this buffer to generate ~init.el~.
+- SLiME
 
 * Configuration
 :PROPERTIES:
