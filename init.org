@@ -259,64 +259,37 @@ Currently unbound because ~C-x g~ is used by Magit.
 ;; (global-set-key [(control ?x) ?g] 'recentf-open-files)
 #+END_SRC
 
-** DONE User interface
-*** DONE Misc
+** Visual elements
 
-- [X] disable startup screen
-- [X] non-blinking cursor
-- [X] limit size of mini-window
-- [X] show column number in mode line
+Show column number in mode line
 
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-(blink-cursor-mode -1)
-(setq max-mini-window-height 2)
 (column-number-mode 1)
 #+END_SRC
 
-*** DONE Prompts
-
-- [X] skip confirmation when creating new files/buffers
-- [X] allow "y" and "n" in yes-or-no questions
-- [X] enable visible bell
+Non-audible bell.
 
 #+BEGIN_SRC emacs-lisp
-(setq confirm-nonexistent-file-or-buffer nil)
-(setq ido-create-new-buffer 'always)
-
-(fset 'yes-or-no-p 'y-or-n-p)
-
 (setq visible-bell t)
 #+END_SRC
 
-*** DONE Frame
-
-- [X] set frame title
-- [X] set default frame parameters and layout
-- [X] show buffer boundaries in fringe
-- [X] set background mode according to terminal type
+Limit size of mini-windows to 2 lines.
 
 #+BEGIN_SRC emacs-lisp
-(setq frame-title-format "%b - Emacs")
+(setq max-mini-window-height 2)
+#+END_SRC
 
-(dolist (par '((height . 31)
-               (width . 81)
-               (vertical-scroll-bars . nil)
-               (horizontal-scroll-bars . nil)
-               (menu-bar-lines . 0)
-               (tool-bar-lines . 0)))
-  (push par default-frame-alist))
+Non-blinking cursor.
 
-;; (tool-bar-mode -1)
-;; (menu-bar-mode -1)
-;; (scroll-bar-mode -1)
+#+BEGIN_SRC emacs-lisp
+(blink-cursor-mode -1)
+#+END_SRC
 
-(setq-default
- indicate-buffer-boundaries
- '((top . left) (bottom . left) (up . right) (down . right)))
+Set the frame background mode according to the value of the
+variable ~background-mode~.  Some themes use different color schemes
+depending on the value of this parameter.
 
-(setq background-mode '((graphic . light) (tty . light)))
-
+#+BEGIN_SRC emacs-lisp
 (defvar background-mode nil
   "Background-mode property value for frames; a symbol specifying
   a MODE, either nil, `light' or `dark', or a list with elements
@@ -343,18 +316,86 @@ Currently unbound because ~C-x g~ is used by Magit.
 (add-hook 'after-make-frame-functions 'set-background-mode)
 #+END_SRC
 
-*** DONE Fonts
-
-- [X] set font
-- [X] set underline style
-- [X] enable file name shadow
+Set a light background both in graphic and in tty frames.
 
 #+BEGIN_SRC emacs-lisp
-(push '(font . "Monospace-11") default-frame-alist)
+(setq background-mode '((graphic . light) (tty . light)))
+#+END_SRC
 
+Set frame size, disable scrollbars, the toolbar and the menu bar.
+This overrides the settings from the X resource database.
+
+#+BEGIN_SRC emacs-lisp
+(dolist (par '((height . 31)
+               (width . 81)
+               (vertical-scroll-bars . nil)
+               (horizontal-scroll-bars . nil)
+               (menu-bar-lines . 0)
+               (tool-bar-lines . 0)))
+  (push par default-frame-alist))
+#+END_SRC
+
+Set title for graphic frames.  This overrides title setting from the X
+resource database.
+
+#+BEGIN_SRC emacs-lisp
+(setq frame-title-format "%b - Emacs")
+#+END_SRC
+
+Use 11-point Monospace (that's the system's default monospace font)
+when running in a graphical frame on X11; use 11-point Consolas on MS
+Windows.  This overrides the font setting from the X resource
+database.
+
+#+BEGIN_SRC emacs-lisp
+(setf (alist-get 'font (alist-get 'x window-system-default-frame-alist))
+      "Monospace-11")
+
+(setf (alist-get 'font (alist-get 'w32 window-system-default-frame-alist))
+      "Consolas-11")
+#+END_SRC
+
+Draw underlines at the descent level, rather than at the baseline
+level.
+
+#+BEGIN_SRC emacs-lisp
 (setq x-underline-at-descent-line t)
+#+END_SRC
 
+Show buffer boundaries in the fringe (graphic frames).
+
+#+BEGIN_SRC emacs-lisp
+(setq-default
+ indicate-buffer-boundaries
+ '((top . left) (bottom . left) (up . right) (down . right)))
+#+END_SRC
+
+** Files and buffers
+
+Inhibit start-up screen.
+
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+
+Enable file-name shadowing in minibuffers.
+
+#+BEGIN_SRC emacs-lisp
 (file-name-shadow-mode 1)
+#+END_SRC
+
+
+
+*** DONE Prompts
+
+- [X] skip confirmation when creating new files/buffers
+- [X] allow "y" and "n" in yes-or-no questions
+- [X] enable visible bell
+
+#+BEGIN_SRC emacs-lisp
+(setq confirm-nonexistent-file-or-buffer nil)
+(setq ido-create-new-buffer 'always)
+(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 ** DONE Default whitespace style
