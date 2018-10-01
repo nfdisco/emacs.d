@@ -372,16 +372,91 @@ Show buffer boundaries in the fringe (graphic frames).
 
 ** Files and buffers
 
-Inhibit start-up screen.
-
-#+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-#+END_SRC
-
 Enable file-name shadowing in minibuffers.
 
 #+BEGIN_SRC emacs-lisp
 (file-name-shadow-mode 1)
+#+END_SRC
+
+Use ido (Interactive Do) in the minibuffer.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ido)
+(ido-mode 1)
+(ido-everywhere 1)
+#+END_SRC
+
+Ask for confirmation before creating new buffers and files.
+
+#+BEGIN_SRC emacs-lisp
+(setq confirm-nonexistent-file-or-buffer t)
+#+END_SRC
+
+Uncomment to avoid confirmation when creating new buffers -- only has
+effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
+
+#+BEGIN_SRC 
+;; (setq ido-create-new-buffer 'always)
+#+END_SRC
+
+Cycle through suggestions with ~TAB~.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-report-no-match nil)
+(setq ido-cannot-complete-command 'ido-next-match) ; cycle
+#+END_SRC
+
+Exclude dot files and files not in the current directory from the
+suggestions list.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'ido
+  (add-to-list 'ido-ignore-files "\\`\\."))
+
+(setq ido-auto-merge-work-directories-length -1)
+#+END_SRC
+
+Match arbitrary substrings except when completing file names.
+
+#+BEGIN_SRC emacs-lisp
+(defvar ido-cur-item)			; prevent compiler warning
+
+(setq ido-enable-prefix nil)            ; this is the default
+
+(defun ido-enable-prefix-if-file-dir ()
+  (when (memq ido-cur-item '(file dir))
+    (setq ido-enable-prefix t)))
+
+(add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
+#+END_SRC
+
+Do not match dots in file names except at the beginning.  Currently
+commented out because it's redudant.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq ido-enable-dot-prefix t)
+#+END_SRC
+
+Bind ~C-p~ to ~previous-history-element~ for consistency -- also remap
+~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
+
+#+BEGIN_SRC emacs-lisp
+;; this needs to be in a hook because ido-completion-map is created from
+;; scratch every time ido is invoked
+
+(defun remap-ido-toggle-prefix ()
+  (let ((map ido-common-completion-map))
+    (define-key map [(control ?o)] 'ido-toggle-prefix)
+    (define-key map [(control ?p)] 'previous-history-element)))
+
+(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
+#+END_SRC
+
+
+Inhibit start-up screen.
+
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
 #+END_SRC
 
 
@@ -393,8 +468,6 @@ Enable file-name shadowing in minibuffers.
 - [X] enable visible bell
 
 #+BEGIN_SRC emacs-lisp
-(setq confirm-nonexistent-file-or-buffer nil)
-(setq ido-create-new-buffer 'always)
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
@@ -447,51 +520,6 @@ Enable file-name shadowing in minibuffers.
 (setq read-buffer-completion-ignore-case t)
 #+END_SRC
 
-ido mode:
-- [X] enable ido mode / ido everywhere
-- [X] conditionally set ido-enable-prefix when reading file and
-  directory names
-- [X] exclude dot files from suggestions
-- [ ] enable flex matching
-- [X] make TAB cycle through suggestions
-
-#+BEGIN_SRC emacs-lisp
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-
-(setq ido-auto-merge-work-directories-length -1)
-(setq ido-enable-dot-prefix nil)
-(with-eval-after-load 'ido
-  (add-to-list 'ido-ignore-files "\\`\\."))
-
-(defvar ido-cur-item)			;prevent compiler warning
-
-;; set `ido-enable-prefix' when completing file names
-(defun ido-enable-prefix-if-file-dir ()
-  (when (or (eq ido-cur-item 'file) (eq ido-cur-item 'dir))
-    (setq ido-enable-prefix t)))
-
-(add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
-
-(setq ido-report-no-match nil)
-;; (setq ido-enable-flex-matching t)
-(setq ido-cannot-complete-command 'ido-next-match) ; cycle
-#+END_SRC
-
-ido history:
-
-- [X] ido-toggle-prefix (C-p) > C-o (open-line)
-- [X] previous-history-element > C-p
-
-#+BEGIN_SRC emacs-lisp
-(defun remap-ido-toggle-prefix ()
-  (let ((map ido-common-completion-map))
-    (define-key map [(control ?o)] 'ido-toggle-prefix)
-    (define-key map [(control ?p)] 'previous-history-element)))
-
-(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
-#+END_SRC
 
 *** DONE Symbol completion                                          :binding:
 
