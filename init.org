@@ -392,7 +392,8 @@ Type ~F5~ to revert/refresh the current buffer.
 
 *** Ido (Interactive Do)
 
-Use ido (Interactive Do) in the minibuffer.
+Enable file name and buffer name completion with ido (Interactive
+Do).
 
 #+BEGIN_SRC emacs-lisp
 (require 'ido)
