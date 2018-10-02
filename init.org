@@ -519,40 +519,29 @@ Prevent "jumps".
       scroll-conservatively 500)
 #+END_SRC
 
-** DONE Completion
-*** DONE Completion lists                                           :binding:
+** Auto-completion
 
-- [X] ~previous-completion~ > ~p~
-- [X] ~next-completion~ > ~n~
+Use ~TAB~ for completion, but only if the current line is already
+indented.  Otherwise ~TAB~ indents the current line.
+
+Some programming language modes do not respect this variable.
+
+#+BEGIN_SRC emacs-lisp
+(setq tab-always-indent 'complete)
+#+END_SRC
+
+*** Mini-buffer
+
+To switch to the completion list buffer type ~M-v~ while in the
+mini-buffer (this is the default).
+
+Once in the completion list buffer, use ~p~ and ~n~ to go to the previous
+and next item.
 
 #+BEGIN_SRC emacs-lisp
 (let ((map completion-list-mode-map))
   (define-key map [?p] 'previous-completion)
   (define-key map [?n] 'next-completion))
-
-*** DONE Symbol completion                                          :binding:
-
-- [X] ~dabbrev-expand~ (~M-/~) > ~M-ç~
-- [X] ~dabbrev-completion~ (~C-M-/~) > ~M-Ç~
-- [ ] ~completion-at-point~ (~C-M-i~, ~M-TAB~) > ~M-ñ~
-- [X] use ~TAB~ for completion in addition to identation
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key [(meta ?ç)] 'dabbrev-expand)
-(global-set-key [(meta ?Ç)] 'dabbrev-completion)
-;; (global-set-key [(meta ?ñ)] 'completion-at-point)
-
-(setq tab-always-indent 'complete)
-
-;; these functions can be used in hooks
-
-(defun set-tab-indent-complete ()
-  "Set `tab-always-indent' to `complete' in the current buffer."
-  (setq-local tab-always-indent 'complete))
-
-(defun set-tab-always-indent ()
-  "Set `tab-always-indent' to t in the current buffer."
-  (setq-local tab-always-indent t))
 #+END_SRC
 
 ** DONE Default whitespace style
