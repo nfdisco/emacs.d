@@ -519,33 +519,16 @@ Prevent "jumps".
       scroll-conservatively 500)
 #+END_SRC
 
-** DONE Default whitespace style
-
-- [X] only show tabs and trailing space by default
-
-#+BEGIN_SRC emacs-lisp
-(setq whitespace-style '(face trailing tabs tab-mark))
-#+END_SRC
-
 ** DONE Completion
 *** DONE Completion lists                                           :binding:
 
 - [X] ~previous-completion~ > ~p~
 - [X] ~next-completion~ > ~n~
-- [X] in ido mode: ~switch-to-completions~ > ~M-v~
 
 #+BEGIN_SRC emacs-lisp
 (let ((map completion-list-mode-map))
   (define-key map [?p] 'previous-completion)
   (define-key map [?n] 'next-completion))
-
-(setq ido-completion-buffer "*Completions*")
-
-(defun ido-completion-list-binding ()
-  (define-key ido-common-completion-map [(meta ?v)]
-    'switch-to-completions))
-(add-hook 'ido-setup-hook 'ido-completion-list-binding)
-#+END_SRC
 
 *** DONE Symbol completion                                          :binding:
 
@@ -570,6 +553,14 @@ Prevent "jumps".
 (defun set-tab-always-indent ()
   "Set `tab-always-indent' to t in the current buffer."
   (setq-local tab-always-indent t))
+#+END_SRC
+
+** DONE Default whitespace style
+
+- [X] only show tabs and trailing space by default
+
+#+BEGIN_SRC emacs-lisp
+(setq whitespace-style '(face trailing tabs tab-mark))
 #+END_SRC
 ** DONE Spelling
 
