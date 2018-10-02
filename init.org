@@ -372,11 +372,25 @@ Show buffer boundaries in the fringe (graphic frames).
 
 ** Files and buffers
 
+Ask for confirmation before creating new buffers and files.
+
+#+BEGIN_SRC emacs-lisp
+(setq confirm-nonexistent-file-or-buffer t)
+#+END_SRC
+
 Enable file-name shadowing in minibuffers.
 
 #+BEGIN_SRC emacs-lisp
 (file-name-shadow-mode 1)
 #+END_SRC
+
+Type ~F5~ to revert/refresh the current buffer.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [f5] 'revert-buffer)
+#+END_SRC
+
+*** Ido (Interactive Do)
 
 Use ido (Interactive Do) in the minibuffer.
 
@@ -386,14 +400,8 @@ Use ido (Interactive Do) in the minibuffer.
 (ido-everywhere 1)
 #+END_SRC
 
-Ask for confirmation before creating new buffers and files.
-
-#+BEGIN_SRC emacs-lisp
-(setq confirm-nonexistent-file-or-buffer t)
-#+END_SRC
-
-Uncomment to avoid confirmation when creating new buffers -- only has
-effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
+Uncomment to skip confirmation when creating new buffers -- it only
+has effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
 
 #+BEGIN_SRC 
 ;; (setq ido-create-new-buffer 'always)
@@ -437,7 +445,7 @@ commented out because it's redudant.
 ;; (setq ido-enable-dot-prefix t)
 #+END_SRC
 
-Bind ~C-p~ to ~previous-history-element~ for consistency -- also remap
+Re-bind ~C-p~ to ~previous-history-element~ for consistency -- also remap
 ~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
 
 #+BEGIN_SRC emacs-lisp
@@ -452,6 +460,42 @@ Bind ~C-p~ to ~previous-history-element~ for consistency -- also remap
 (add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
 #+END_SRC
 
+*** Dired
+
+Enable dired mode.  Type ~C-d~ in the find file prompt to open a Dired
+buffer.
+
+#+BEGIN_SRC emacs-lisp
+(require 'dired)
+#+END_SRC
+
+Type ~F5~ in a Dired buffer to refresh its contents.
+
+#+BEGIN_SRC emacs-lisp
+(defun dired-refresh-buffer ()
+  "Refresh Dired buffer without prompting for confirmation."
+  (interactive)
+  (unless (string= major-mode "dired-mode")
+    (error "Not a Dired buffer"))
+  (revert-buffer nil t)
+  (message "Directory listing updated."))
+
+(define-key dired-mode-map [f5] 'dired-refresh-buffer)
+#+END_SRC
+
+Omit dot-files from directory listings.  Type ~C-x M-o~ to show them.
+
+#+BEGIN_SRC emacs-lisp
+(require 'dired-x)
+
+(setq dired-omit-files
+      (concat dired-omit-files "\\|^\\..+$"))
+
+(add-hook 'dired-mode-hook
+          (lambda () (dired-omit-mode 1)))
+#+END_SRC
+
+** Unclassified
 
 Inhibit start-up screen.
 
@@ -459,13 +503,7 @@ Inhibit start-up screen.
 (setq inhibit-startup-message t)
 #+END_SRC
 
-
-
-*** DONE Prompts
-
-- [X] skip confirmation when creating new files/buffers
-- [X] allow "y" and "n" in yes-or-no questions
-- [X] enable visible bell
+Allow "y" and "n" in yes-or-no questions.
 
 #+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -545,53 +583,6 @@ Inhibit start-up screen.
   "Set `tab-always-indent' to t in the current buffer."
   (setq-local tab-always-indent t))
 #+END_SRC
-
-** DONE Dired                                                       :binding:
-
-- [X] add support for alternate set of listing switches
-- [X] ~dired-toggle-listing-switches~ > ~{~
-- [X] ~dired-refresh-buffer~ > ~f5~
-
-#+BEGIN_SRC emacs-lisp
-(require 'dired)
-
-(define-key dired-mode-map [?{] 'dired-toggle-listing-switches)
-(define-key dired-mode-map [f5] 'dired-refresh-buffer)
-
-(setq dired-listing-switches "-hl")
-(setq dired-listing-switches-alt "-hla")
-
-(defcustom dired-listing-switches-alt "-l"
-  "Alternate set of switches passed to `ls' for Dired.  Use
-  `dired-toggle-listing-switches' to toggle between these switches
-  and the normal switches in a Dired buffer."
-  :type 'string :group 'dired)
-
-(defun dired-toggle-listing-switches ()
-  "Toggle between normal listing switches and alternate listing
-  switches in Dired buffers.  See `dired-listing-switches' and
-  `dired-listing-switches-alt'."
-  (interactive)
-  (let* ((state (not (get 'dired-toggle-listing-switches
-                          'saved-state)))
-         (switches (if state
-                       dired-listing-switches-alt
-                     dired-listing-switches)))
-    (put 'dired-toggle-listing-switches 'saved-state state)
-    (if (dired-safe-switches-p switches)
-        (progn
-          (setq dired-actual-switches switches)
-          (revert-buffer))
-      (error "Unsafe switches: \"%s\"" switches))))
-
-(defun dired-refresh-buffer ()
-  "Refresh Dired buffer without prompting for confirmation."
-  (interactive)
-  (unless (string= major-mode "dired-mode")
-    (error "Not a Dired buffer"))
-  (revert-buffer nil t)
-  (message "Directory listing updated."))
-#+END_SRC
 ** DONE Spelling
 
 - [X] use spell-checker ~hunspell~
@@ -619,12 +610,10 @@ Inhibit start-up screen.
 
 ** DONE Windows / buffers                                           :binding:
 
-- [X] ~revert-buffer~ > ~f5~
 - [ ] ~other-window~ > ~C-TAB~ (~org-force-cycle-archived~)
 - [X] ~kill-this-buffer~ > ~C-x k~ (~(ido-)kill-buffer~)
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key [f5] 'revert-buffer)
 (global-set-key [(control ?x) ?k] 'kill-this-buffer)
 ;; (global-set-key [(control tab)] 'other-window)
 #+END_SRC
