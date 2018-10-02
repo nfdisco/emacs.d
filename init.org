@@ -496,16 +496,20 @@ Currently unbound because ~C-x g~ is used by Magit.
 ;; (global-set-key [(control ?x) ?g] 'recentf-open-files)
 #+END_SRC
 
-** DONE Scrolling
+** Scrolling
 
-- [X] enable "smooth" scrolling
-- [X] preserve screen position
+Preserve point position on the screen while scrolling.
+
+#+BEGIN_SRC emacs-lisp
+(setq scroll-preserve-screen-position t)
+#+END_SRC
+
+Prevent "jumps".
 
 #+BEGIN_SRC emacs-lisp
 (setq scroll-margin 1
       scroll-step 1
       scroll-conservatively 500)
-(setq scroll-preserve-screen-position t)
 #+END_SRC
 
 ** DONE Default whitespace style
