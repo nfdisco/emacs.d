@@ -352,6 +352,13 @@ Ask for confirmation before creating new buffers and files.
 (setq confirm-nonexistent-file-or-buffer t)
 #+END_SRC
 
+Ignore case when completing file/buffer names
+
+#+BEGIN_SRC emacs-lisp
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
+#+END_SRC
+
 Enable file-name shadowing in minibuffers.
 
 #+BEGIN_SRC emacs-lisp
@@ -540,16 +547,6 @@ Prevent "jumps".
 (add-hook 'ido-setup-hook 'ido-completion-list-binding)
 #+END_SRC
 
-*** DONE Minibuffer completion
-
-- [X] ignore case when completing file/buffer names
-
-#+BEGIN_SRC emacs-lisp
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-#+END_SRC
-
-
 *** DONE Symbol completion                                          :binding:
 
 - [X] ~dabbrev-expand~ (~M-/~) > ~M-ç~
@@ -729,7 +726,6 @@ Prevent "jumps".
 (global-set-key [(meta ?¡)] 'delete-horizontal-space)
 (global-set-key [(meta ?¿)] 'delete-blank-lines)
 #+END_SRC
-
 ** DONE Mail
 
 *** DONE General settings
@@ -751,7 +747,6 @@ Prevent "jumps".
 (setq smtpmail-smtp-service 465)
 (setq smtpmail-stream-type 'ssl)
 #+END_SRC
-
 ** DONE Indentation
 
 - [X] indent with spaces
