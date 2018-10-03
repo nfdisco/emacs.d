@@ -521,8 +521,8 @@ Prevent "jumps".
 
 ** Auto-completion
 
-Use ~TAB~ for completion, but only if the current line is already
-indented.  Otherwise ~TAB~ indents the current line.
+Type ~TAB~ for symbol completion.  If the current line isn't already
+indented, indent the current line instead.
 
 Some programming language modes do not respect this variable.
 
@@ -530,12 +530,15 @@ Some programming language modes do not respect this variable.
 (setq tab-always-indent 'complete)
 #+END_SRC
 
+Type ~M-/~ (~dabbrev-expand~) and ~C-M-/~ (~dabbrev-complete~) to expand the
+word at point.  This is the default.
+
 *** Mini-buffer
 
 To switch to the completion list buffer type ~M-v~ while in the
-mini-buffer (this is the default).
+mini-buffer.  This is the default.
 
-Once in the completion list buffer, use ~p~ and ~n~ to go to the previous
+In the completion list buffer, type ~p~ and ~n~ to jump to the previous
 and next item.
 
 #+BEGIN_SRC emacs-lisp
