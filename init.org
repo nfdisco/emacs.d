@@ -608,6 +608,7 @@ Use spaces for indentation.
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 #+END_SRC
+
 ** E-Mail
 
 Type ~M-x message-mail~ to open a new message buffer.  This is the
@@ -636,109 +637,49 @@ the =~/.authinfo= file.
 (setq smtpmail-stream-type 'ssl)
 #+END_SRC
 
-** TODO General editing
+** Text editing
 
-*** DONE Motion                                                     :binding:
-
-- [X] double space marks end of sentence
-- [X] ~backward-paragraph~ > ~M-p~
-- [X] ~forward-paragraph~ > ~M-n~
+Type ~M-+~ (~delete-indentation~) to join the current line to the
+previous.
 
 #+BEGIN_SRC emacs-lisp
-(setq sentence-end-double-space t)
+(global-set-key [(meta ?+)] 'delete-indentation)
+#+END_SRC
+
+Type ~M-q~ (~fill-paragraph~) to justify a paragraph.  (This is the
+default.)
+
+Wrap lines at 70 characters.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default fill-column 70)
+#+END_SRC
+
+Type ~M-p~ and ~M-n~ to move the point backward and forward one paragraph.
+
+#+BEGIN_SRC emacs-lisp
 (global-set-key [(meta ?n)] 'forward-paragraph)
 (global-set-key [(meta ?p)] 'backward-paragraph)
 #+END_SRC
 
-*** TODO Mark and region
+Use two spaces to indicate the end of a sentence.
 
-#+BEGIN_SRC emacs-lisp
-;; (transient-mark-mode 1)
+#+BEGIN_SRC 
+(setq sentence-end-double-space t)
 #+END_SRC
 
-*** TODO Formatting paragraphs
+** Unclassified
 
-- [X] set default value for ~fill-column~
-- [ ] ~unfill-paragraph~
+Inhibit start-up screen.
 
 #+BEGIN_SRC emacs-lisp
-(setq-default fill-column 70)
-
-;; (defun unfill-paragraph ()
-;;   "Takes a multi-line paragraph and makes it into a single line."
-;;   (interactive)
-;;   (let ((fill-column (point-max)))
-;;     (fill-paragraph nil t)))
+(setq inhibit-startup-message t)
 #+END_SRC
 
-*** TODO Comments
-
-- [ ] ~copy-and-comment~
+Allow "y" and "n" in yes-or-no questions.
 
 #+BEGIN_SRC emacs-lisp
-;; (defun copy-and-comment (beg end)
-;;   "Insert a copy of the region and comment the original out."
-;;   (interactive "r")
-;;   (let ((p (copy-marker end)))
-;;     (kill-ring-save beg end)
-;;     (comment-region beg end)
-;;     (goto-char p)
-;;     (yank)
-;;     (goto-char p)))
-#+END_SRC
-
-*** TODO Line operations
-
-- [ ] ~copy-line~
-- [ ] ~duplicate-line~
-
-#+BEGIN_SRC emacs-lisp
-;; (defun copy-line (arg)
-;;   "Copy lines (as many as prefix argument) in the kill ring"
-;;   (interactive "p")
-;;   (kill-ring-save (line-beginning-position)
-;;                (line-beginning-position (+ 1 arg)))
-;;   (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
-
-;; ;; http://stackoverflow.com/questions/88399/
-;; (defun duplicate-line (arg)
-;;   "Duplicate current line, leaving point in lower line."
-;;   (interactive "*p")
-;;   (setq buffer-undo-list (cons (point) buffer-undo-list))
-;;   (let ((bol (save-excursion (beginning-of-line) (point))) eol)
-;;     (save-excursion
-;;       (end-of-line)
-;;       (setq eol (point))
-;;       (let ((line (buffer-substring bol eol))
-;;          (buffer-undo-list t)
-;;          (count arg))
-;;      (while (> count 0)
-;;        (newline)         ;; because there is no newline in 'line'
-;;        (insert line)
-;;        (setq count (1- count))))
-;;       (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list))))
-;;   (next-line arg))
-
-;; (global-set-key (kbd "C-c w")   'copy-line)
-;; (global-set-key (kbd "C-c d")   'duplicate-line)
-#+END_SRC
-
-*** DONE Killing                                                    :binding:
-
-- [ ] ~kill-line~ at start of line kills whole line
-- [X] ~kill-whole-line~ (~C-S-backspace~) >
-                                 ~C-x C-d~ (~ido-list-directory~)
-- [X] ~delete-indentation~ (~M-^~) > ~M-+~
-- [X] ~delete-horizontal-space~ (~M-\~) > ~M-¡~
-- [X] ~delete-blank-lines~ (~C-x C-o~) > ~M-¿~
-
-#+BEGIN_SRC emacs-lisp
-;; (setq kill-whole-line t)
-
-(global-set-key [(control ?x) (control ?d)] 'kill-whole-line)
-(global-set-key [(meta ?+)] 'delete-indentation)
-(global-set-key [(meta ?¡)] 'delete-horizontal-space)
-(global-set-key [(meta ?¿)] 'delete-blank-lines)
+(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 ** TODO Modes
@@ -1254,20 +1195,6 @@ Disable C-TAB?
 
 ;; intepreter options
 (setq inferior-R-args "--no-save --quiet")
-#+END_SRC
-
-** Unclassified
-
-Inhibit start-up screen.
-
-#+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-#+END_SRC
-
-Allow "y" and "n" in yes-or-no questions.
-
-#+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 * Notes
