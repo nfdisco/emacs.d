@@ -604,11 +604,17 @@ Use spaces for indentation.
 #+END_SRC
 ** E-Mail
 
+Type ~M-x message-mail~ to open a new message buffer.  This is the
+default.
+
 Sender name and address.
 
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Ernest Adrogué")
-(setq user-mail-address "nr9@posteo.de")
+(setq user-full-name
+      (string 69 114 110 101 115 116 32
+              65 100 114 111 103 117 233))
+(setq user-mail-address
+      (string-remove-prefix "foo" "foonr9@posteo.de"))
 #+END_SRC
 
 Send mail via an SMTP server.  Authentication information is read from
