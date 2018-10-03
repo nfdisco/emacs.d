@@ -552,6 +552,16 @@ and next item.
   (define-key map [?p] 'previous-completion)
   (define-key map [?n] 'next-completion))
 #+END_SRC
+** Spell-checking
+
+On Unix, use Hunspell to check spelling, with the British English
+dictionary as default.
+
+#+BEGIN_SRC emacs-lisp
+(unless windows-system
+  (setq ispell-program-name "hunspell")
+  (ispell-change-dictionary "en_GB" t))
+#+END_SRC
 
 ** DONE Default whitespace style
 
@@ -559,17 +569,6 @@ and next item.
 
 #+BEGIN_SRC emacs-lisp
 (setq whitespace-style '(face trailing tabs tab-mark))
-#+END_SRC
-** DONE Spelling
-
-- [X] use spell-checker ~hunspell~
-- [X] set default dictionary
-
-#+BEGIN_SRC emacs-lisp
-;; spelling
-
-(setq ispell-program-name "hunspell")
-(ispell-change-dictionary "en_GB" t)    ; default dictionary
 #+END_SRC
 
 ** DONE Printing
