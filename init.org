@@ -168,6 +168,14 @@ time formats.
 (setq system-time-locale "C")
 #+END_SRC
 
+** Start-up
+
+Inhibit start-up screen.
+
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+
 ** Auto-saving and backups
 
 Enable auto-saving.
@@ -350,6 +358,14 @@ Show buffer boundaries in the fringe (graphic frames only).
  '((top . left) (bottom . left) (up . right) (down . right)))
 #+END_SRC
 
+** Verbosity
+
+Allow "y" and "n" in yes-or-no questions.
+
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
 ** Files and buffers
 
 Ask for confirmation before creating new buffers and files.
@@ -514,7 +530,6 @@ Currently unbound because ~C-x g~ is used by Magit.
 #+BEGIN_SRC emacs-lisp
 ;; (global-set-key [(control ?x) ?g] 'recentf-open-files)
 #+END_SRC
-
 ** Scrolling
 
 Preserve point position on the screen while scrolling.
@@ -558,33 +573,6 @@ and next item.
   (define-key map [?p] 'previous-completion)
   (define-key map [?n] 'next-completion))
 #+END_SRC
-** Spell-checking
-
-On Unix, use Hunspell to check spelling, with the British English
-dictionary as default.
-
-#+BEGIN_SRC emacs-lisp
-(unless windows-system
-  (setq ispell-program-name "hunspell")
-  (ispell-change-dictionary "en_GB" t))
-#+END_SRC
-
-** Printing
-
-Type ~M-x ps-print-buffer~ to generate and print a PostScript image of
-the current buffer.  With the prefix argument ~C-u~, save the PostScript
-image to a file instead of printing.  This is the default.
-
-Print on A4 paper, in grayscale, in 10-point Courier.
-
-#+BEGIN_SRC emacs-lisp
-(setq ps-paper-type 'a4)
-(setq ps-print-color-p nil)
-(setq ps-print-header nil)
-(setq ps-font-family 'Courier)
-(setq ps-font-size 10)
-#+END_SRC
-
 ** Clipboard and primary selection
 
 Use the clipboard when cutting and pasting and not the primary
@@ -600,41 +588,6 @@ click location.
 
 #+BEGIN_SRC emacs-lisp
 (setq mouse-yank-at-point t)
-#+END_SRC
-** Indentation
-
-Use spaces for indentation.
-
-#+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil)
-#+END_SRC
-
-** E-Mail
-
-Type ~M-x message-mail~ to open a new message buffer.  This is the
-default.
-
-Sender name and address.
-
-#+BEGIN_SRC emacs-lisp
-(setq user-full-name
-      (string 69 114 110 101 115 116 32
-              65 100 114 111 103 117 233))
-(setq user-mail-address
-      (string-remove-prefix "foo" "foonr9@posteo.de"))
-#+END_SRC
-
-Send mail via an SMTP server.  Authentication information is read from
-the =~/.authinfo= file.
-
-#+BEGIN_SRC emacs-lisp
-(require 'smtpmail)
-(setq send-mail-function 'smtpmail-send-it)
-(setq message-send-mail-function 'message-smtpmail-send-it)
-(setq smtpmail-default-smtp-server "posteo.de")
-(setq smtpmail-smtp-server "posteo.de")
-(setq smtpmail-smtp-service 465)
-(setq smtpmail-stream-type 'ssl)
 #+END_SRC
 
 ** Text editing
@@ -667,22 +620,69 @@ Use two spaces to indicate the end of a sentence.
 #+BEGIN_SRC 
 (setq sentence-end-double-space t)
 #+END_SRC
+** Indentation
 
-** Unclassified
-
-Inhibit start-up screen.
-
-#+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-#+END_SRC
-
-Allow "y" and "n" in yes-or-no questions.
+Use spaces for indentation.
 
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+** Spell-checking
+
+On Unix, use Hunspell to check spelling, with the British English
+dictionary as default.
+
+#+BEGIN_SRC emacs-lisp
+(unless windows-system
+  (setq ispell-program-name "hunspell")
+  (ispell-change-dictionary "en_GB" t))
 #+END_SRC
 
-** TODO Modes
+** E-Mail
+
+Type ~M-x message-mail~ to open a new message buffer.  This is the
+default.
+
+Sender name and address.
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name
+      (string 69 114 110 101 115 116 32
+              65 100 114 111 103 117 233))
+(setq user-mail-address
+      (string-remove-prefix "foo" "foonr9@posteo.de"))
+#+END_SRC
+
+Send mail via an SMTP server.  Authentication information is read from
+the =~/.authinfo= file.
+
+#+BEGIN_SRC emacs-lisp
+(require 'smtpmail)
+(setq send-mail-function 'smtpmail-send-it)
+(setq message-send-mail-function 'message-smtpmail-send-it)
+(setq smtpmail-default-smtp-server "posteo.de")
+(setq smtpmail-smtp-server "posteo.de")
+(setq smtpmail-smtp-service 465)
+(setq smtpmail-stream-type 'ssl)
+#+END_SRC
+
+** Printing
+
+Type ~M-x ps-print-buffer~ to generate and print a PostScript image of
+the current buffer.  With the prefix argument ~C-u~, save the PostScript
+image to a file instead of printing.  This is the default.
+
+Print on A4 paper, in grayscale, in 10-point Courier.
+
+#+BEGIN_SRC emacs-lisp
+(setq ps-paper-type 'a4)
+(setq ps-print-color-p nil)
+(setq ps-print-header nil)
+(setq ps-font-family 'Courier)
+(setq ps-font-size 10)
+#+END_SRC
+
+** TODO Major modes
 *** DONE Default major modes
 
 - [X] set text mode as default mode
