@@ -595,6 +595,34 @@ click location.
 #+BEGIN_SRC emacs-lisp
 (setq mouse-yank-at-point t)
 #+END_SRC
+** Indentation
+
+Use spaces for indentation.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+** E-Mail
+
+Sender name and address.
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Ernest Adrogué")
+(setq user-mail-address "nr9@posteo.de")
+#+END_SRC
+
+Send mail via an SMTP server.  Authentication information is read from
+the =~/.authinfo= file.
+
+#+BEGIN_SRC emacs-lisp
+(require 'smtpmail)
+(setq send-mail-function 'smtpmail-send-it)
+(setq message-send-mail-function 'message-smtpmail-send-it)
+(setq smtpmail-default-smtp-server "posteo.de")
+(setq smtpmail-smtp-server "posteo.de")
+(setq smtpmail-smtp-service 465)
+(setq smtpmail-stream-type 'ssl)
+#+END_SRC
 
 ** DONE Default whitespace style
 
@@ -707,44 +735,6 @@ click location.
 (global-set-key [(meta ?+)] 'delete-indentation)
 (global-set-key [(meta ?¡)] 'delete-horizontal-space)
 (global-set-key [(meta ?¿)] 'delete-blank-lines)
-#+END_SRC
-** DONE Mail
-
-*** DONE General settings
-
-#+BEGIN_SRC emacs-lisp
-(setq user-full-name "Ernest Adrogué")
-(setq user-mail-address "nr9@posteo.de")
-(setq mail-from-style 'parens)
-#+END_SRC
-
-*** DONE Outgoing mail
-
-#+BEGIN_SRC emacs-lisp
-(require 'smtpmail)
-(setq send-mail-function 'smtpmail-send-it)
-(setq message-send-mail-function 'message-smtpmail-send-it)
-(setq smtpmail-default-smtp-server "posteo.de")
-(setq smtpmail-smtp-server "posteo.de")
-(setq smtpmail-smtp-service 465)
-(setq smtpmail-stream-type 'ssl)
-#+END_SRC
-** DONE Indentation
-
-- [X] indent with spaces
-
-#+BEGIN_SRC emacs-lisp
-(defun indent-style-tabs ()
-  "Set the buffer-local variable `indent-tabs-mode' to t."
-  (interactive)
-  (setq indent-tabs-mode t))
-
-(defun indent-style-spaces ()
-  "Set the buffer-local variable `indent-tabs-mode' to nil."
-  (interactive)
-  (setq indent-tabs-mode nil))
-
-(setq-default indent-tabs-mode nil)
 #+END_SRC
 
 ** TODO Modes
