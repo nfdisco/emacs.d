@@ -563,25 +563,28 @@ dictionary as default.
   (ispell-change-dictionary "en_GB" t))
 #+END_SRC
 
+** Printing
+
+Type ~M-x ps-print-buffer~ to generate and print a PostScript image of
+the current buffer.  With the prefix argument ~C-u~, save the PostScript
+image to a file instead of printing.  This is the default.
+
+Print on A4 paper, in grayscale, in 10-point Courier.
+
+#+BEGIN_SRC emacs-lisp
+(setq ps-paper-type 'a4)
+(setq ps-print-color-p nil)
+(setq ps-print-header nil)
+(setq ps-font-family 'Courier)
+(setq ps-font-size 10)
+#+END_SRC
+
 ** DONE Default whitespace style
 
 - [X] only show tabs and trailing space by default
 
 #+BEGIN_SRC emacs-lisp
 (setq whitespace-style '(face trailing tabs tab-mark))
-#+END_SRC
-
-** DONE Printing
-
-- [X] set settings for PostScript hardcopies
-
-#+BEGIN_SRC emacs-lisp
-(setq ps-paper-type 'a4)
-(setq ps-print-color-p nil)
-(setq ps-print-header nil)
-;; possible fonts: Courier, Helvetica, NewCenturySchlbk, Palatino, Times
-(setq ps-font-family 'Courier)
-(setq ps-font-size 10)
 #+END_SRC
 
 ** TODO Mouse
