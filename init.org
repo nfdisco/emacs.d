@@ -352,6 +352,12 @@ Ask for confirmation before creating new buffers and files.
 (setq confirm-nonexistent-file-or-buffer t)
 #+END_SRC
 
+Type ~C-x k~ to kill the current buffer.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [(control ?x) ?k] 'kill-this-buffer)
+#+END_SRC
+
 Ignore case when completing file/buffer names
 
 #+BEGIN_SRC emacs-lisp
@@ -577,16 +583,6 @@ and next item.
 ;; possible fonts: Courier, Helvetica, NewCenturySchlbk, Palatino, Times
 (setq ps-font-family 'Courier)
 (setq ps-font-size 10)
-#+END_SRC
-
-** DONE Windows / buffers                                           :binding:
-
-- [ ] ~other-window~ > ~C-TAB~ (~org-force-cycle-archived~)
-- [X] ~kill-this-buffer~ > ~C-x k~ (~(ido-)kill-buffer~)
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key [(control ?x) ?k] 'kill-this-buffer)
-;; (global-set-key [(control tab)] 'other-window)
 #+END_SRC
 
 ** TODO Mouse
