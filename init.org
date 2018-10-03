@@ -579,28 +579,29 @@ Print on A4 paper, in grayscale, in 10-point Courier.
 (setq ps-font-size 10)
 #+END_SRC
 
+** Clipboard and primary selection
+
+Use the clipboard when cutting and pasting and not the primary
+selection.  This is the default.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq select-enable-primary nil)
+;; (setq select-enable-clipboard t)
+#+END_SRC
+
+Paste at point position when yanking with the mouse, rather than at
+click location.
+
+#+BEGIN_SRC emacs-lisp
+(setq mouse-yank-at-point t)
+#+END_SRC
+
 ** DONE Default whitespace style
 
 - [X] only show tabs and trailing space by default
 
 #+BEGIN_SRC emacs-lisp
 (setq whitespace-style '(face trailing tabs tab-mark))
-#+END_SRC
-
-** TODO Mouse
-
-- [X] make middle-click paste at point position
-
-#+BEGIN_SRC emacs-lisp
-(setq mouse-yank-at-point t)         ; don't move point when yanking
-;; (setq select-active-regions 'only)
-#+END_SRC
-
-** TODO Clipboard
-
-#+BEGIN_SRC emacs-lisp
-;; (setq select-enable-primary nil)
-;; (setq select-enable-clipboard t)
 #+END_SRC
 
 ** TODO General editing
