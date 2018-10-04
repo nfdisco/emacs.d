@@ -708,6 +708,18 @@ Enable auto-filling.
 (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
+*** Comint
+
+Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
+current input.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'comint-mode
+  (let ((map comint-mode-map))
+    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
+#+END_SRC
+
 *** Common settings for programming modes
 
 Wrap lines at 76 characters.
@@ -736,18 +748,6 @@ Set file permissions when saving executable scripts.
           'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
-*** Comint
-
-Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
-current input.
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'comint-mode
-  (let ((map comint-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
-#+END_SRC
-
 *** Python mode
 
 Use the GNU Emacs mode (~python.el~).
@@ -756,6 +756,127 @@ Use the GNU Emacs mode (~python.el~).
 (when (fboundp 'py-shell) (fmakunbound 'py-shell))
 (when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
 (autoload 'python-mode "python" "Python editing mode (python.el)" t)
+#+END_SRC
+
+*** AUCTeX
+
+Use the XeTeX engine.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-engine 'xetex)
+#+END_SRC
+
+On Unix, use ~xdg-open~ to open PDF files.
+
+#+BEGIN_SRC emacs-lisp
+(defvar TeX-view-program-selection)     ; compiler warning
+
+(unless windows-system
+  (with-eval-after-load 'tex
+    (add-to-list 'TeX-view-program-selection
+                 '(output-pdf "xdg-open"))))
+#+END_SRC
+
+Use light syntax highlighting with normal-sized sub/super-scripts and
+section headers.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-install-font-lock 'tex-font-setup)
+(setq font-latex-fontify-script nil)
+(setq font-latex-fontify-sectioning 'color)
+#+END_SRC
+
+Set ~a4paper~ as a default option for document classes.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-default-options "a4paper")
+#+END_SRC
+
+Disable symbol completion.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'TeX-mode-hook
+          (lambda () (setq-local tab-always-indent t)))
+#+END_SRC
+
+Indent new lines. 
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-newline-function 'newline-and-indent)
+#+END_SRC
+
+Section labels without a prefix.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-section-label nil)
+#+END_SRC
+
+Use the equation prefix in ~multline~ and ~subequations~ labels.
+
+#+BEGIN_SRC emacs-lisp
+(defvar LaTeX-label-alist)              ; compiler warning
+
+(with-eval-after-load 'latex
+  (dolist (elt '(("multline"     . LaTeX-equation-label)
+                 ("subequations" . LaTeX-equation-label)))
+    (add-to-list 'LaTeX-label-alist elt)))
+#+END_SRC
+
+Treat comments as ordinary text.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-syntactic-comments nil)
+#+END_SRC
+
+Treat comments as LaTeX code in docTeX mode.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'docTeX-mode-hook
+          (lambda () (setq-local LaTeX-syntactic-comments t)))
+#+END_SRC
+
+Enable RefTex minor mode.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'LaTeX-mode-hook 'reftex-mode)
+#+END_SRC
+
+Uncomment to enable LaTeX-math minor mode.
+
+#+BEGIN_SRC emacs-lisp
+;; (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+#+END_SRC
+
+Enable TeX-fold minor mode.
+
+#+BEGIN_SRC emacs-lisp
+(defvar TeX-fold-env-spec-list)         ; compiler warning
+
+(with-eval-after-load 'tex-fold
+  (dolist (elt '("displaymath"
+                 "equation"
+                 "equation*"
+                 "eqnarray"
+                 "eqnarray*"
+                 "subequations"
+                 "gather"
+                 "gather*"
+                 "align"
+                 "align*"
+                 "alignat"
+                 "alignat*"
+                 "flalign"
+                 "flalign*"
+                 "multline"
+                 "multline*"
+                 "figure"
+                 "table"
+                 "thebibliography"
+                 "titlepage"))
+    (add-to-list 'TeX-fold-env-spec-list
+                 `(,(format "[%s]" elt) (,elt)))))
+
+(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
 #+END_SRC
 
 *** DONE PO mode                                                    :binding:
@@ -920,103 +1041,6 @@ Use the GNU Emacs mode (~python.el~).
   (when po-enable-ruler-mode (ruler-mode)))
 
 (add-hook 'po-subedit-mode-hook 'po-enable-ruler-mode-maybe)
-#+END_SRC
-
-*** DONE AUCTeX
-
-- [X] use XeTeX by default
-- [X] set default document class options
-- [X] configure default labels
-- [X] disable syntactic comments except in docTeX mode
-- [X] normal ~RET~ key
-- [X] alternative (simpler) syntax highlighting scheme
-- [X] normal font height in scripts and section titles
-- [ ] add support for ~completion-at-point~
-- [X] open PDF output with ~xdg-open~
-- [X] extend list of environments to be folded
-- [X] enable RefTeX minor mode in LaTeX mode
-- [X] enable LaTeX fold minor mode in LaTeX mode
-- [X] enable LaTex math minor mode in LaTeX mode
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-engine 'xetex)
-
-(setq LaTeX-default-options "a4paper")
-
-(setq LaTeX-section-label nil)
-
-(defvar LaTeX-label-alist)
-
-(with-eval-after-load 'latex
-  (dolist (elt '(("multline"     . LaTeX-equation-label)
-                 ("subequations" . LaTeX-equation-label)))
-    (add-to-list 'LaTeX-label-alist elt)))
-
-(setq LaTeX-syntactic-comments nil)
-(add-hook 'docTeX-mode-hook 'LaTeX-enable-syntactic-comments)
-
-(setq TeX-newline-function 'newline-and-indent)
-
-;; (setq TeX-auto-untabify t)
-
-;; simpler font locking scheme
-(setq TeX-install-font-lock 'tex-font-setup)
-(setq font-latex-fontify-script nil)
-(setq font-latex-fontify-sectioning 'color)
-
-;; (setq TeX-auto-save t)
-;; (setq TeX-parse-self t)
-
-;; ;; support symbol completion using standard completion mechanism
-;; (defun TeX-set-completion-at-point-functions ()
-;;   (setq-local completion-at-point-functions '(TeX-complete-symbol)))
-
-;; (add-hook 'TeX-mode-hook 'TeX-set-completion-at-point-functions)
-
-(add-hook 'TeX-mode-hook 'set-tab-always-indent)
-
-(defvar TeX-view-program-selection)
-
-(with-eval-after-load 'tex
-  (add-to-list 'TeX-view-program-selection '(output-pdf "xdg-open")))
-
-(defvar TeX-fold-env-spec-list)         ; compiler warning
-
-(with-eval-after-load 'tex-fold
-  (dolist (elt '("displaymath"
-                 "equation"
-                 "equation*"
-                 "eqnarray"
-                 "eqnarray*"
-                 "subequations"
-                 "gather"
-                 "gather*"
-                 "align"
-                 "align*"
-                 "alignat"
-                 "alignat*"
-                 "flalign"
-                 "flalign*"
-                 "multline"
-                 "multline*"
-                 "figure"
-                 "table"
-                 "thebibliography"
-                 "titlepage"))
-    (add-to-list 'TeX-fold-env-spec-list
-                 `(,(format "[%s]" elt) (,elt)))))
-
-(add-hook 'LaTeX-mode-hook 'reftex-mode)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
-
-(defun LaTeX-enable-syntactic-comments ()
-  "Set `LaTeX-enable-syntactic-comments' to t in the current buffer."
-  (setq-local LaTeX-syntactic-comments t))
-
-;; http://tex.stackexchange.com/questions/124246/
-;; (setq LaTeX-command-style
-;;       '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
 #+END_SRC
 
 *** DONE Org                                                        :binding:
