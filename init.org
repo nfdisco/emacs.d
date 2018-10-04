@@ -879,6 +879,46 @@ Enable TeX-fold minor mode.
 (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
 #+END_SRC
 
+*** ESS
+
+Try to not require ~ess-site~, as it slows down start-up considerably.
+
+#+BEGIN_SRC emacs-lisp
+(autoload 'R-mode "ess-site.el" "Major mode for editing R source." t)
+(autoload 'Rd-mode "ess-rd" "Major mode for editing R documentation." t)
+(add-to-list 'auto-mode-alist '("\\.[rR]\\'" . R-mode))
+(add-to-list 'auto-mode-alist '("\\.[Rr]out" . R-transcript-mode))
+(add-to-list 'auto-mode-alist '("\\.Rd\\'" . Rd-mode))
+(add-to-list 'interpreter-mode-alist '("Rscript" . R-mode))
+(add-to-list 'interpreter-mode-alist '("r" . R-mode))
+#+END_SRC
+
+Do not to save R history.
+
+#+BEGIN_SRC emacs-lisp
+(setq inferior-R-args "--quiet --no-save")
+#+END_SRC
+
+Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
+current input.  (We need to set these again, because ESS overrides
+~comint-mode-map~ with its own keymap.)
+
+#+BEGIN_SRC emacs-lisp
+(defvar inferior-ess-mode-map)          ; compiler warning
+
+(with-eval-after-load 'ess
+  (lambda ()
+    (let ((map inferior-ess-mode-map))
+    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input))))
+#+END_SRC
+
+Type ~TAB~ to (un)fold Roxygen comments.
+
+#+BEGIN_SRC emacs-lisp
+(setq ess-roxy-hide-show-p t)
+#+END_SRC
+
 *** DONE PO mode                                                    :binding:
 - [X] turn on ruler mode in subedit buffers
 - [X] add spell-checking support (~po-ispell-msgstr~ > ~i~)
@@ -1159,40 +1199,6 @@ Disable C-TAB?
 ;;   (define-key org-mode-map [(control tab)] nil))
 
 ;; (add-hook 'org-mode-hook 'org-disable-control-tab)
-#+END_SRC
-
-*** TODO ESS                                                        :binding:
-
-- [X] ~comint-previous-matching-input-from-input~ > ~M-p~
-- [X] ~comint-next-matching-input-from-input~ > ~M-n~
-
-#+BEGIN_SRC emacs-lisp
-;; ess overrides comint-mode-map
-
-(defvar inferior-ess-mode-map)          ; compiler warning
-
-(defun ess-set-history-keys ()
-  (let ((map inferior-ess-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
-
-(with-eval-after-load 'ess
-  (ess-set-history-keys))
-
-;; try to not (require 'ess-site) as it slows down start-up
-(autoload 'R-mode "ess-site.el" "Major mode for editing R source." t)
-(autoload 'Rd-mode "ess-rd" "Major mode for editing R documentation." t)
-(add-to-list 'auto-mode-alist '("\\.[rR]\\'" . R-mode))
-(add-to-list 'auto-mode-alist '("\\.[Rr]out" . R-transcript-mode))
-(add-to-list 'auto-mode-alist '("\\.Rd\\'" . Rd-mode))
-(add-to-list 'interpreter-mode-alist '("Rscript" . R-mode))
-(add-to-list 'interpreter-mode-alist '("r" . R-mode))
-
-;; enable hide-show to allow roxygen comments be un/folded with <TAB>
-(setq ess-roxy-hide-show-p t)
-
-;; intepreter options
-(setq inferior-R-args "--no-save --quiet")
 #+END_SRC
 
 * Notes
