@@ -701,12 +701,47 @@ Open email messages with message mode.
 (add-to-list 'magic-mode-alist '("From:" . message-mode))
 #+END_SRC
 
-*** DONE Text mode
+*** Text mode
 
-- [X] enable auto-filling
+Enable auto-filling.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'text-mode-hook 'auto-fill-mode)
+#+END_SRC
+
+*** DONE Programming modes
+
+- [X] set ~fill-column~
+- [X] show matching parentheses
+- [X] show white space
+- [X] set file permissions when saving executable scripts
+
+#+BEGIN_SRC emacs-lisp
+(setq prog-fill-column 76)
+
+(add-hook 'prog-mode-hook 'prog-set-fill-column)
+(add-hook 'prog-mode-hook 'show-paren-mode)
+(add-hook 'prog-mode-hook 'whitespace-mode)
+
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+
+(defun prog-set-fill-column ()
+  "Set the buffer-local variable `fill-column' according the
+  value of `prog-fill-column'"
+  (setq fill-column prog-fill-column))
+
+(defvar prog-fill-column fill-column
+  "Value of `fill-column' in programming modes.")
+#+END_SRC
+
+*** DONE Lisp
+
+- [ ] enable eldoc-mode (enabled globally by default in 25.1)
+
+#+BEGIN_SRC emacs-lisp
+;; (add-hook 'lisp-mode-hook 'eldoc-mode)
+;; (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 #+END_SRC
 
 *** DONE PO mode                                                    :binding:
@@ -1086,41 +1121,6 @@ Disable C-TAB?
 ;;   (define-key org-mode-map [(control tab)] nil))
 
 ;; (add-hook 'org-mode-hook 'org-disable-control-tab)
-#+END_SRC
-
-*** DONE Programming modes
-
-- [X] set ~fill-column~
-- [X] show matching parentheses
-- [X] show white space
-- [X] set file permissions when saving executable scripts
-
-#+BEGIN_SRC emacs-lisp
-(setq prog-fill-column 76)
-
-(add-hook 'prog-mode-hook 'prog-set-fill-column)
-(add-hook 'prog-mode-hook 'show-paren-mode)
-(add-hook 'prog-mode-hook 'whitespace-mode)
-
-(add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
-
-(defun prog-set-fill-column ()
-  "Set the buffer-local variable `fill-column' according the
-  value of `prog-fill-column'"
-  (setq fill-column prog-fill-column))
-
-(defvar prog-fill-column fill-column
-  "Value of `fill-column' in programming modes.")
-#+END_SRC
-
-*** DONE Lisp
-
-- [ ] enable eldoc-mode (enabled globally by default in 25.1)
-
-#+BEGIN_SRC emacs-lisp
-;; (add-hook 'lisp-mode-hook 'eldoc-mode)
-;; (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 #+END_SRC
 
 *** DONE Slime
