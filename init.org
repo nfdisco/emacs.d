@@ -919,6 +919,141 @@ Type ~TAB~ to (un)fold Roxygen comments.
 (setq ess-roxy-hide-show-p t)
 #+END_SRC
 
+*** Org mode
+
+Look for org files in the =~/doc/org= directory.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-directory (expand-file-name "~/doc/org"))
+#+END_SRC
+
+By default, save notes in the ~todo.org~ file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-default-notes-file "todo.org")
+#+END_SRC
+
+Get a list of agenda files from the ~agenda-files~ file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files (expand-file-name "agenda-files" org-directory))
+#+END_SRC
+
+Archive subtrees in a separate file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-archive-location "%s-archive::")
+#+END_SRC
+
+Read capture and structure templates from ~~/.emacs.d/org-templates.el~.
+
+#+BEGIN_SRC emacs-lisp
+(let ((org-templates-file
+       (expand-file-name "org-templates.el"
+                         user-emacs-directory)))
+  (when (and org-templates-file
+             (file-exists-p org-templates-file))
+    (load-file org-templates-file)))
+#+END_SRC
+
+Automatically fold tree when opening a file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-folded t)
+#+END_SRC
+
+Do not leave empty lines in collapsed view.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-cycle-separator-lines 0)
+#+END_SRC
+
+Do not wrap long lines.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-truncated t)
+#+END_SRC
+
+Do not assume text is indented according to outline structure.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-adapt-indentation nil)
+#+END_SRC
+
+Do not indent text according to outline structure.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-indented nil)
+#+END_SRC
+
+Do not add extra indentation in source code blocks.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-src-preserve-indentation t)
+#+END_SRC
+
+Place footnotes at the end of the current section.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-footnote-section nil)
+#+END_SRC
+
+Enforce "todo" states dependencies.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-enforce-todo-dependencies t)
+(setq org-enforce-todo-checkbox-dependencies t)
+#+END_SRC
+
+Uncomment to log changes to "done" states.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq org-log-done 'time)
+#+END_SRC
+
+Type ~C-c c~ to open a capture template.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [(control ?c) ?c] 'org-capture)
+#+END_SRC
+
+Use syntax highlighting for emphasis and hide mark-up.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-emphasis-markers t)
+#+END_SRC
+
+Hide leading stars in headings.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-leading-stars t)
+#+END_SRC
+
+When exporting, do not include a table of contents.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-with-toc nil)
+#+END_SRC
+
+When exporting, do not include author, date, email or creator elements.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-with-author nil)
+(setq org-export-with-date nil)
+(setq org-export-with-email nil)
+(setq org-export-with-creator nil)
+#+END_SRC
+
+Uncomment to enable evaluation of Emacs Lisp and Unix shell blocks.
+
+#+BEGIN_SRC emacs-lisp
+;; (with-eval-after-load 'org
+;;   (org-babel-do-load-languages
+;;    'org-babel-load-languages
+;;    '((emacs-lisp . t)
+;;      (shell      . t))))
+#+END_SRC
+
 *** DONE PO mode                                                    :binding:
 - [X] turn on ruler mode in subedit buffers
 - [X] add spell-checking support (~po-ispell-msgstr~ > ~i~)
@@ -1081,124 +1216,6 @@ Type ~TAB~ to (un)fold Roxygen comments.
   (when po-enable-ruler-mode (ruler-mode)))
 
 (add-hook 'po-subedit-mode-hook 'po-enable-ruler-mode-maybe)
-#+END_SRC
-
-*** DONE Org                                                        :binding:
-
-Default locations of org files and other files used by org-mode.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-directory (expand-file-name "~/doc/org"))
-(setq org-default-notes-file "todo.org")
-(setq org-agenda-files (expand-file-name "agenda-files" org-directory))
-(setq org-archive-location "%s-archive::")
-#+END_SRC
-
-Put capture and structure templates in a separate file; or set this to
-nil to use the customize interface instead.
-
-#+BEGIN_SRC emacs-lisp
-(defvar org-templates-file nil
-  "Path to a file with template definitions for org-mode.
-The file will be loaded by init.el with `load-file', unless the
-value of this variable is `nil'.")
-
-(setq org-templates-file
-      (expand-file-name "org-templates.el" user-emacs-directory))
-#+END_SRC
-
-Startup settings.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-startup-folded t)
-(setq org-startup-truncated t)
-#+END_SRC
-
-Turn off all indentation virtual or real.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-startup-indented nil)
-(setq org-adapt-indentation nil)
-#+END_SRC
-
-Lessen visual clutter.  Restart =font-lock-mode= if you change these.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-hide-emphasis-markers t)
-(setq org-hide-leading-stars t)
-#+END_SRC
-
-Settings for inserting new headings or items.  Must experiment to find
-optimal values.
-
-#+BEGIN_SRC emacs-lisp
-;; (setq org-M-RET-may-split-line t)
-;; (setq org-insert-heading-respect-content t)
-#+END_SRC
-
-Place footnotes at the end of the current section.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-footnote-section nil)
-#+END_SRC
-
-Don't mess about with the indentation of source code blocks.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-src-preserve-indentation t)
-#+END_SRC
-
-Allow evaluation of Emacs Lisp and Unix shell blocks.
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'org
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (shell      . t))))
-#+END_SRC
-
-Log change to "done" state and enforce todo states dependencies.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-enforce-todo-dependencies t)
-(setq org-enforce-todo-checkbox-dependencies t)
-(setq org-log-done 'time)
-#+END_SRC
-
-Load templates.
-
-#+BEGIN_SRC emacs-lisp
-(when (and org-templates-file
-           (file-exists-p org-templates-file))
-  (load-file org-templates-file))
-#+END_SRC
-
-Set global capture key.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key [(control ?c) ?c] 'org-capture)
-#+END_SRC
-
-General export settings.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-export-with-author nil)
-(setq org-export-with-creator nil)
-(setq org-export-with-date nil)
-(setq org-export-with-email nil)
-(setq org-export-with-toc nil)
-#+END_SRC
-
-Disable C-TAB?
-
-#+BEGIN_SRC emacs-lisp
-;; (defvar org-mode-map)                 ; prevent compiler warning
-
-;; (defun org-disable-control-tab ()
-;;   (define-key org-mode-map [(control tab)] nil))
-
-;; (add-hook 'org-mode-hook 'org-disable-control-tab)
 #+END_SRC
 
 * Notes
