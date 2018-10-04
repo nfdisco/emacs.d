@@ -1125,27 +1125,9 @@ Disable C-TAB?
 ;; (add-hook 'org-mode-hook 'org-disable-control-tab)
 #+END_SRC
 
-*** DONE Slime
+*** Comint
 
-- [X] use pre-compiled image for (allegedly) quicker startup
-
-#+BEGIN_SRC emacs-lisp
-(defun slime-setup-quick-startup ()
-  (let ((slime-core (expand-file-name
-                     (concat (file-name-as-directory "slime")
-                             "sbcl.core-for-slime")
-                     user-emacs-directory)))
-    (when (file-exists-p slime-core)
-      (add-to-list 'slime-lisp-implementations
-                   `(sbcl-quick-startup ("sbcl" "--core" ,slime-core))))))
-
-(with-eval-after-load 'slime (slime-setup-quick-startup))
-#+END_SRC
-
-*** DONE Comint                                                     :binding:
-
-- [X] ~comint-previous-matching-input-from-input~ > ~M-p~
-- [X] ~comint-next-matching-input-from-input~ > ~M-n~
+Navigate backward and forward through history by typing ~M-p~ and ~M-n~. 
 
 #+BEGIN_SRC emacs-lisp
 ;; (defvar comint-mode-map)                 ; prevent compiler warning
