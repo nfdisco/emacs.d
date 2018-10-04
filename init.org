@@ -736,13 +736,14 @@ Set file permissions when saving executable scripts.
           'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
-*** DONE Lisp
+*** Python mode
 
-- [ ] enable eldoc-mode (enabled globally by default in 25.1)
+Use the GNU Emacs mode (~python.el~).
 
 #+BEGIN_SRC emacs-lisp
-;; (add-hook 'lisp-mode-hook 'eldoc-mode)
-;; (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(when (fboundp 'py-shell) (fmakunbound 'py-shell))
+(when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
+(autoload 'python-mode "python" "Python editing mode (python.el)" t)
 #+END_SRC
 
 *** DONE PO mode                                                    :binding:
@@ -1157,15 +1158,6 @@ Disable C-TAB?
 (with-eval-after-load 'comint-mode
   (comint-set-history-keys))
 
-#+END_SRC
-
-*** TODO Python
-
-#+BEGIN_SRC emacs-lisp
-;; python mode (use the version bundled with emacs)
-(when (fboundp 'py-shell) (fmakunbound 'py-shell))
-(when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
-(autoload 'python-mode "python" "Python editing mode (python.el)" t)
 #+END_SRC
 
 *** TODO ESS                                                        :binding:
