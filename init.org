@@ -267,7 +267,7 @@ Show column number in mode line
 (column-number-mode 1)
 #+END_SRC
 
-Show tabs and trailing space.
+Show tabs and trailing space by default, in whitespace mode.
 
 #+BEGIN_SRC emacs-lisp
 (setq whitespace-style '(face trailing tabs tab-mark))
@@ -682,7 +682,7 @@ Print on A4 paper, in grayscale, in 10-point Courier.
 #+END_SRC
 
 ** Major modes
-
+*** Default mode and mode associations
 Set text mode as the default mode for files and buffers.
 
 #+BEGIN_SRC emacs-lisp
@@ -700,7 +700,6 @@ Open email messages with message mode.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'magic-mode-alist '("From:" . message-mode))
 #+END_SRC
-
 *** Text mode
 
 Enable auto-filling.
@@ -709,30 +708,32 @@ Enable auto-filling.
 (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-*** DONE Programming modes
+*** Common settings for programming modes
 
-- [X] set ~fill-column~
-- [X] show matching parentheses
-- [X] show white space
-- [X] set file permissions when saving executable scripts
+Wrap lines at 76 characters.
 
 #+BEGIN_SRC emacs-lisp
-(setq prog-fill-column 76)
+(add-hook 'prog-mode-hook
+          (lambda () (setq fill-column 76)))
+#+END_SRC
 
-(add-hook 'prog-mode-hook 'prog-set-fill-column)
+Show matching parentheses.
+
+#+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook 'show-paren-mode)
-(add-hook 'prog-mode-hook 'whitespace-mode)
+#+END_SRC
 
+Show white space.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'whitespace-mode)
+#+END_SRC
+
+Set file permissions when saving executable scripts.
+
+#+BEGIN_SRC emacs-lisp
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
-
-(defun prog-set-fill-column ()
-  "Set the buffer-local variable `fill-column' according the
-  value of `prog-fill-column'"
-  (setq fill-column prog-fill-column))
-
-(defvar prog-fill-column fill-column
-  "Value of `fill-column' in programming modes.")
 #+END_SRC
 
 *** DONE Lisp
