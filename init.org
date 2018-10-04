@@ -549,9 +549,8 @@ Prevent "jumps".
 ** Auto-completion
 
 Type ~TAB~ for symbol completion.  If the current line isn't already
-indented, indent the current line instead.
-
-Some programming language modes do not respect this variable.
+indented, indent the current line instead.  Some programming language
+modes do not respect this variable.
 
 #+BEGIN_SRC emacs-lisp
 (setq tab-always-indent 'complete)
@@ -566,7 +565,7 @@ To switch to the completion list buffer type ~M-v~ while in the
 mini-buffer.  This is the default.
 
 In the completion list buffer, type ~p~ and ~n~ to jump to the previous
-and next item.
+and next item in the list.
 
 #+BEGIN_SRC emacs-lisp
 (let ((map completion-list-mode-map))
@@ -584,7 +583,7 @@ selection.  This is the default.
 #+END_SRC
 
 Paste at point position when yanking with the mouse, rather than at
-click location.
+click position.
 
 #+BEGIN_SRC emacs-lisp
 (setq mouse-yank-at-point t)
@@ -682,18 +681,23 @@ Print on A4 paper, in grayscale, in 10-point Courier.
 (setq ps-font-size 10)
 #+END_SRC
 
-** TODO Major modes
-*** DONE Default major modes
+** Major modes
 
-- [X] set text mode as default mode
-- [X] plain text files (~*.te?xt~) use use org mode
-- [X] compose mail with message mode
+Set text mode as the default mode for files and buffers.
 
 #+BEGIN_SRC emacs-lisp
 (setq-default major-mode 'text-mode)
+#+END_SRC
 
+Open plain text files (~*.te?xt~) with Org mode. 
+
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.te?xt\\'" . org-mode))
+#+END_SRC
 
+Open email messages with message mode.
+
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'magic-mode-alist '("From:" . message-mode))
 #+END_SRC
 
