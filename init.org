@@ -736,6 +736,18 @@ Set file permissions when saving executable scripts.
           'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
+*** Comint
+
+Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
+current input.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'comint-mode
+  (let ((map comint-mode-map))
+    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
+#+END_SRC
+
 *** Python mode
 
 Use the GNU Emacs mode (~python.el~).
@@ -1123,23 +1135,6 @@ Disable C-TAB?
 ;;   (define-key org-mode-map [(control tab)] nil))
 
 ;; (add-hook 'org-mode-hook 'org-disable-control-tab)
-#+END_SRC
-
-*** Comint
-
-Navigate backward and forward through history by typing ~M-p~ and ~M-n~. 
-
-#+BEGIN_SRC emacs-lisp
-;; (defvar comint-mode-map)                 ; prevent compiler warning
-
-(defun comint-set-history-keys ()
-  (let ((map comint-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
-
-(with-eval-after-load 'comint-mode
-  (comint-set-history-keys))
-
 #+END_SRC
 
 *** TODO ESS                                                        :binding:
