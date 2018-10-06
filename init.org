@@ -1,18 +1,19 @@
-#+TITLE: GNU Emacs configuration
+#+TITLE: GNU Emacs configuration file
 #+OPTIONS: toc:t
 
 * Overview
 Personal GNU Emacs configuration file.
 
-Type ~M-x org-babel-tangle~ in this buffer to generate ~init.el~.
-
-Non-built-in packages that are set up here:
-- Solarized color theme
-- Org-mode
-- PO-mode
+This configuration sets up several non-built-in packages, namely
+- Solarized (color theme)
+- Gettext PO mode
 - AUCTeX
 - ESS
-- SLiME
+although none of them are required.
+
+Saving this file with Emacs will automatically generate the
+initialization file ~init.el~ and compile it.  To generate ~init.el~
+manually, type ~M-x org-babel-tangle~ in this buffer.
 
 * Configuration
 :PROPERTIES:
