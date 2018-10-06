@@ -438,11 +438,10 @@ suggestions list.
 Match arbitrary substrings except when completing file names.
 
 #+BEGIN_SRC emacs-lisp
-(defvar ido-cur-item)			; prevent compiler warning
-
 (setq ido-enable-prefix nil)            ; this is the default
 
 (defun ido-enable-prefix-if-file-dir ()
+  (defvar ido-cur-item)                 ; compiler warning
   (when (memq ido-cur-item '(file dir))
     (setq ido-enable-prefix t)))
 
