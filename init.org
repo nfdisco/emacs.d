@@ -708,217 +708,6 @@ Enable auto-filling.
 (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-*** Comint
-
-Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
-current input.
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'comint-mode
-  (let ((map comint-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
-#+END_SRC
-
-*** Common settings for programming modes
-
-Wrap lines at 76 characters.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook
-          (lambda () (setq fill-column 76)))
-#+END_SRC
-
-Show matching parentheses.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'show-paren-mode)
-#+END_SRC
-
-Show white space.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'whitespace-mode)
-#+END_SRC
-
-Set file permissions when saving executable scripts.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
-#+END_SRC
-
-*** Python mode
-
-Use the GNU Emacs mode (~python.el~).
-
-#+BEGIN_SRC emacs-lisp
-(when (fboundp 'py-shell) (fmakunbound 'py-shell))
-(when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
-(autoload 'python-mode "python" "Python editing mode (python.el)" t)
-#+END_SRC
-
-*** AUCTeX
-
-Use the XeTeX engine.
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-engine 'xetex)
-#+END_SRC
-
-On Unix, use ~xdg-open~ to open PDF files.
-
-#+BEGIN_SRC emacs-lisp
-(defvar TeX-view-program-selection)     ; compiler warning
-
-(unless windows-system
-  (with-eval-after-load 'tex
-    (add-to-list 'TeX-view-program-selection
-                 '(output-pdf "xdg-open"))))
-#+END_SRC
-
-Use light syntax highlighting with normal-sized sub/super-scripts and
-section headers.
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-install-font-lock 'tex-font-setup)
-(setq font-latex-fontify-script nil)
-(setq font-latex-fontify-sectioning 'color)
-#+END_SRC
-
-Set ~a4paper~ as a default option for document classes.
-
-#+BEGIN_SRC emacs-lisp
-(setq LaTeX-default-options "a4paper")
-#+END_SRC
-
-Disable symbol completion.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'TeX-mode-hook
-          (lambda () (setq-local tab-always-indent t)))
-#+END_SRC
-
-Indent new lines. 
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-newline-function 'newline-and-indent)
-#+END_SRC
-
-Section labels without a prefix.
-
-#+BEGIN_SRC emacs-lisp
-(setq LaTeX-section-label nil)
-#+END_SRC
-
-Use the equation prefix in ~multline~ and ~subequations~ labels.
-
-#+BEGIN_SRC emacs-lisp
-(defvar LaTeX-label-alist)              ; compiler warning
-
-(with-eval-after-load 'latex
-  (dolist (elt '(("multline"     . LaTeX-equation-label)
-                 ("subequations" . LaTeX-equation-label)))
-    (add-to-list 'LaTeX-label-alist elt)))
-#+END_SRC
-
-Treat comments as ordinary text.
-
-#+BEGIN_SRC emacs-lisp
-(setq LaTeX-syntactic-comments nil)
-#+END_SRC
-
-Treat comments as LaTeX code in docTeX mode.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'docTeX-mode-hook
-          (lambda () (setq-local LaTeX-syntactic-comments t)))
-#+END_SRC
-
-Enable RefTex minor mode.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'LaTeX-mode-hook 'reftex-mode)
-#+END_SRC
-
-Uncomment to enable LaTeX-math minor mode.
-
-#+BEGIN_SRC emacs-lisp
-;; (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-#+END_SRC
-
-Enable TeX-fold minor mode.
-
-#+BEGIN_SRC emacs-lisp
-(defvar TeX-fold-env-spec-list)         ; compiler warning
-
-(with-eval-after-load 'tex-fold
-  (dolist (elt '("displaymath"
-                 "equation"
-                 "equation*"
-                 "eqnarray"
-                 "eqnarray*"
-                 "subequations"
-                 "gather"
-                 "gather*"
-                 "align"
-                 "align*"
-                 "alignat"
-                 "alignat*"
-                 "flalign"
-                 "flalign*"
-                 "multline"
-                 "multline*"
-                 "figure"
-                 "table"
-                 "thebibliography"
-                 "titlepage"))
-    (add-to-list 'TeX-fold-env-spec-list
-                 `(,(format "[%s]" elt) (,elt)))))
-
-(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
-#+END_SRC
-
-*** ESS
-
-Try to not require ~ess-site~, as it slows down start-up considerably.
-
-#+BEGIN_SRC emacs-lisp
-(autoload 'R-mode "ess-site.el" "Major mode for editing R source." t)
-(autoload 'Rd-mode "ess-rd" "Major mode for editing R documentation." t)
-(add-to-list 'auto-mode-alist '("\\.[rR]\\'" . R-mode))
-(add-to-list 'auto-mode-alist '("\\.[Rr]out" . R-transcript-mode))
-(add-to-list 'auto-mode-alist '("\\.Rd\\'" . Rd-mode))
-(add-to-list 'interpreter-mode-alist '("Rscript" . R-mode))
-(add-to-list 'interpreter-mode-alist '("r" . R-mode))
-#+END_SRC
-
-Do not to save R history.
-
-#+BEGIN_SRC emacs-lisp
-(setq inferior-R-args "--quiet --no-save")
-#+END_SRC
-
-Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
-current input.  (We need to set these again, because ESS overrides
-~comint-mode-map~ with its own keymap.)
-
-#+BEGIN_SRC emacs-lisp
-(defvar inferior-ess-mode-map)          ; compiler warning
-
-(with-eval-after-load 'ess
-  (lambda ()
-    (let ((map inferior-ess-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input))))
-#+END_SRC
-
-Type ~TAB~ to (un)fold Roxygen comments.
-
-#+BEGIN_SRC emacs-lisp
-(setq ess-roxy-hide-show-p t)
-#+END_SRC
-
 *** Org mode
 
 Look for org files in the =~/doc/org= directory.
@@ -1054,6 +843,139 @@ Uncomment to enable evaluation of Emacs Lisp and Unix shell blocks.
 ;;      (shell      . t))))
 #+END_SRC
 
+*** AUCTeX
+
+Use the XeTeX engine.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-engine 'xetex)
+#+END_SRC
+
+On Unix, use ~xdg-open~ to open PDF files.
+
+#+BEGIN_SRC emacs-lisp
+(defvar TeX-view-program-selection)     ; compiler warning
+
+(unless windows-system
+  (with-eval-after-load 'tex
+    (add-to-list 'TeX-view-program-selection
+                 '(output-pdf "xdg-open"))))
+#+END_SRC
+
+Use light syntax highlighting with normal-sized sub/super-scripts and
+section headers.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-install-font-lock 'tex-font-setup)
+(setq font-latex-fontify-script nil)
+(setq font-latex-fontify-sectioning 'color)
+#+END_SRC
+
+Set ~a4paper~ as a default option for document classes.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-default-options "a4paper")
+#+END_SRC
+
+Disable symbol completion.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'TeX-mode-hook
+          (lambda () (setq-local tab-always-indent t)))
+#+END_SRC
+
+Indent new lines. 
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-newline-function 'newline-and-indent)
+#+END_SRC
+
+Section labels without a prefix.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-section-label nil)
+#+END_SRC
+
+Use the equation prefix in ~multline~ and ~subequations~ labels.
+
+#+BEGIN_SRC emacs-lisp
+(defvar LaTeX-label-alist)              ; compiler warning
+
+(with-eval-after-load 'latex
+  (dolist (elt '(("multline"     . LaTeX-equation-label)
+                 ("subequations" . LaTeX-equation-label)))
+    (add-to-list 'LaTeX-label-alist elt)))
+#+END_SRC
+
+Treat comments as ordinary text.
+
+#+BEGIN_SRC emacs-lisp
+(setq LaTeX-syntactic-comments nil)
+#+END_SRC
+
+Treat comments as LaTeX code in docTeX mode.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'docTeX-mode-hook
+          (lambda () (setq-local LaTeX-syntactic-comments t)))
+#+END_SRC
+
+Enable RefTex minor mode.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'LaTeX-mode-hook 'reftex-mode)
+#+END_SRC
+
+Uncomment to enable LaTeX-math minor mode.
+
+#+BEGIN_SRC emacs-lisp
+;; (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+#+END_SRC
+
+Enable TeX-fold minor mode.
+
+#+BEGIN_SRC emacs-lisp
+(defvar TeX-fold-env-spec-list)         ; compiler warning
+
+(with-eval-after-load 'tex-fold
+  (dolist (elt '("displaymath"
+                 "equation"
+                 "equation*"
+                 "eqnarray"
+                 "eqnarray*"
+                 "subequations"
+                 "gather"
+                 "gather*"
+                 "align"
+                 "align*"
+                 "alignat"
+                 "alignat*"
+                 "flalign"
+                 "flalign*"
+                 "multline"
+                 "multline*"
+                 "figure"
+                 "table"
+                 "thebibliography"
+                 "titlepage"))
+    (add-to-list 'TeX-fold-env-spec-list
+                 `(,(format "[%s]" elt) (,elt)))))
+
+(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+#+END_SRC
+
+*** Comint
+
+Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
+current input.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'comint-mode
+  (let ((map comint-mode-map))
+    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
+#+END_SRC
+
 *** Gettext (PO mode)
 
 Insert the original string in the edit buffer when editing an
@@ -1171,6 +1093,84 @@ string placeholders and other programing language elements.
             ;; skip leading/trailing/standalone dashes and command switches
             (add-to-list 'ispell-skip-region-alist
                          '("\\(\\W\\|\\`\\)[-+]\\(\\W\\|[[:alnum:]]+\\|\\'\\)"))))
+#+END_SRC
+
+*** Common settings for programming modes
+
+Wrap lines at 76 characters.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook
+          (lambda () (setq fill-column 76)))
+#+END_SRC
+
+Show matching parentheses.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'show-paren-mode)
+#+END_SRC
+
+Show white space.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'whitespace-mode)
+#+END_SRC
+
+Set file permissions when saving executable scripts.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+#+END_SRC
+
+*** Python mode
+
+Use the GNU Emacs mode (~python.el~).
+
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'py-shell) (fmakunbound 'py-shell))
+(when (fboundp 'doctest-mode) (fmakunbound 'doctest-mode))
+(autoload 'python-mode "python" "Python editing mode (python.el)" t)
+#+END_SRC
+
+*** ESS
+
+Try to not require ~ess-site~, as it slows down start-up considerably.
+
+#+BEGIN_SRC emacs-lisp
+(autoload 'R-mode "ess-site.el" "Major mode for editing R source." t)
+(autoload 'Rd-mode "ess-rd" "Major mode for editing R documentation." t)
+(add-to-list 'auto-mode-alist '("\\.[rR]\\'" . R-mode))
+(add-to-list 'auto-mode-alist '("\\.[Rr]out" . R-transcript-mode))
+(add-to-list 'auto-mode-alist '("\\.Rd\\'" . Rd-mode))
+(add-to-list 'interpreter-mode-alist '("Rscript" . R-mode))
+(add-to-list 'interpreter-mode-alist '("r" . R-mode))
+#+END_SRC
+
+Do not to save R history.
+
+#+BEGIN_SRC emacs-lisp
+(setq inferior-R-args "--quiet --no-save")
+#+END_SRC
+
+Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
+current input.  (We need to set these again, because ESS overrides
+~comint-mode-map~ with its own keymap.)
+
+#+BEGIN_SRC emacs-lisp
+(defvar inferior-ess-mode-map)          ; compiler warning
+
+(with-eval-after-load 'ess
+  (lambda ()
+    (let ((map inferior-ess-mode-map))
+    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input))))
+#+END_SRC
+
+Type ~TAB~ to (un)fold Roxygen comments.
+
+#+BEGIN_SRC emacs-lisp
+(setq ess-roxy-hide-show-p t)
 #+END_SRC
 
 * Notes
