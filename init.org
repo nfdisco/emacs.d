@@ -634,7 +634,7 @@ dictionary as default.
 #+BEGIN_SRC emacs-lisp
 (unless windows-system
   (setq ispell-program-name "hunspell")
-  (ispell-change-dictionary "en_GB" t))
+  (setq ispell-dictionary "en_GB"))
 #+END_SRC
 
 ** E-Mail
