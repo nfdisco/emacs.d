@@ -649,7 +649,7 @@ Sender name and address.
       (string 69 114 110 101 115 116 32
               65 100 114 111 103 117 233))
 (setq user-mail-address
-      (string-remove-prefix "foo" "foonr9@posteo.de"))
+      (substring "foonr9@posteo.de" 3 nil))
 #+END_SRC
 
 Send mail via an SMTP server.  Authentication information is read from
