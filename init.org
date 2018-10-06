@@ -34,7 +34,7 @@ manually, type ~M-x org-babel-tangle~ in this buffer.
 ** Global variables and constants
 
 #+BEGIN_SRC emacs-lisp
-(defconst windows-system (eq system-type 'windows-nt)
+(defconst windows-system-p (eq system-type 'windows-nt)
   "Non-nil if Emacs is running on a Microsoft Windows operating system.")
 #+END_SRC
 
@@ -46,7 +46,7 @@ user's Emacs directory.
 
 #+BEGIN_SRC emacs-lisp
 (let ((data-dir
-       (if windows-system
+       (if windows-system-p
            (getenv "appdata")
          (or (getenv "XDG_DATA_HOME")
              (expand-file-name "~/.local/share")))))
@@ -634,7 +634,7 @@ On Unix, use Hunspell to check spelling, with the British English
 dictionary as default.
 
 #+BEGIN_SRC emacs-lisp
-(unless windows-system
+(unless windows-system-p
   (setq ispell-program-name "hunspell")
   (setq ispell-dictionary "en_GB"))
 #+END_SRC
@@ -858,7 +858,7 @@ On Unix, use ~xdg-open~ to open PDF files.
 #+BEGIN_SRC emacs-lisp
 (defvar TeX-view-program-selection)     ; compiler warning
 
-(unless windows-system
+(unless windows-system-p
   (with-eval-after-load 'tex
     (add-to-list 'TeX-view-program-selection
                  '(output-pdf "xdg-open"))))
