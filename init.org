@@ -214,11 +214,11 @@ Do not keep duplicated entries in the minibuffer history.
 Remember search strings across sessions.
 
 #+BEGIN_SRC emacs-lisp
-(let (vars '(search-ring regexp-search-ring))
+(let ((variables '(search-ring regexp-search-ring)))
   (if (boundp 'savehist-additional-variables)
-      (dolist (var vars)
+      (dolist (var variables)
         (add-to-list savehist-additional-variables var))
-    (setq savehist-additional-variables vars)))
+    (setq savehist-additional-variables variables)))
 #+END_SRC
 
 Use ~C-p~, ~C-n~, ~M-p~ and ~M-n~ to navigate through minibuffer history while
@@ -235,11 +235,11 @@ in the minibuffer.
 Uncomment the following to save the kill ring across sessions.
 
 #+BEGIN_SRC emacs-lisp
-;; (let (vars '(kill-ring))
+;; (let ((variables '(kill-ring)))
 ;;   (if (boundp 'savehist-additional-variables)
-;;       (dolist (var vars)
+;;       (dolist (var variables)
 ;;         (add-to-list savehist-additional-variables var))
-;;     (setq savehist-additional-variables vars)))
+;;     (setq savehist-additional-variables variables)))
 #+END_SRC
 
 Jump to last known point position when opening a file.
