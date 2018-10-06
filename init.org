@@ -213,7 +213,7 @@ Do not keep duplicated entries in the minibuffer history.
 
 Remember search strings across sessions.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 (let (vars '(search-ring regexp-search-ring))
   (if (boundp 'savehist-additional-variables)
       (dolist (var vars)
@@ -234,7 +234,7 @@ in the minibuffer.
 
 Uncomment the following to save the kill ring across sessions.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 ;; (let (vars '(kill-ring))
 ;;   (if (boundp 'savehist-additional-variables)
 ;;       (dolist (var vars)
@@ -422,7 +422,7 @@ Do).
 Uncomment to skip confirmation when creating new buffers -- it only
 has effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
 
-#+BEGIN_SRC 
+#+BEGIN_SRC emacs-lisp
 ;; (setq ido-create-new-buffer 'always)
 #+END_SRC
 
@@ -624,7 +624,7 @@ Type ~M-p~ and ~M-n~ to move the point backward and forward one paragraph.
 
 Use two spaces to indicate the end of a sentence.
 
-#+BEGIN_SRC 
+#+BEGIN_SRC emacs-lisp
 (setq sentence-end-double-space t)
 #+END_SRC
 ** Indentation
