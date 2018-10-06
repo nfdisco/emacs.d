@@ -61,8 +61,8 @@ user's Emacs directory.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 #+END_SRC
 
-Prevent Emacs from loading obselete bytecode files (although this will
-not prevent Emacs from loading an obsolete ~./init.elc~).
+Prevent Emacs from loading obselete bytecode files.  Notice that this
+will not prevent Emacs from loading an obsolete ~./init.elc~.
 
 #+BEGIN_SRC emacs-lisp
 (setq load-prefer-newer t)
@@ -93,15 +93,16 @@ user's Emacs directory.
 
 *** Solarized
 
-Add the location of the theme's subdirectory to the search path.
+For technical details about this theme, see the [[https://ethanschoonover.com/solarized][theme's homepage]].
+
+Add the theme's subdirectory to the search path.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path
              (expand-file-name "solarized" custom-theme-directory))
 #+END_SRC
 
-Override face difinitions with our own.  For the color names used by
-this theme see: [[http://ethanschoonover.com/solarized]]
+Override face difinitions with our own.  
 
 #+BEGIN_SRC emacs-lisp
 (defvar solarized-custom-color-definitions nil
@@ -142,13 +143,13 @@ this theme see: [[http://ethanschoonover.com/solarized]]
         (gnus-header-subject       (:inherit font-lock-keyword-face))))
 #+END_SRC
 
-Allow bold fonts.
+Uncomment to stop Solarized from displaying bold.
 
 #+BEGIN_SRC emacs-lisp
-(setq solarized-bold t)
+;; (setq solarized-bold nil)
 #+END_SRC
 
-Enable theme.
+Enable theme, if it's available.
 
 #+BEGIN_SRC emacs-lisp
 (defun solarized-enable (&optional args)
@@ -164,8 +165,8 @@ Enable theme.
 
 ** Locale
 
-Instead of the current locale, use the C locale (en_US) for date and
-time formats.
+Instead of the current locale, use the C locale (~en_US~) for displaying
+date and time strings.
 
 #+BEGIN_SRC emacs-lisp
 (setq system-time-locale "C")
@@ -181,7 +182,7 @@ Inhibit start-up screen.
 
 ** Auto-saving and backups
 
-Enable auto-saving.
+Auto-save every 300 input events and after 60 seconds of idle time.
 
 #+BEGIN_SRC emacs-lisp
 (setq auto-save-default t)
@@ -201,8 +202,13 @@ Remember minibuffer input across sessions.
 
 #+BEGIN_SRC emacs-lisp
 (savehist-mode 1)
-(setq history-length 50000)
-;; (setq history-delete-duplicates t)
+(setq history-length 20000)
+#+END_SRC
+
+Do not keep duplicated entries in the minibuffer history.
+
+#+BEGIN_SRC emacs-lisp
+(setq history-delete-duplicates t)
 #+END_SRC
 
 Remember search strings across sessions.
