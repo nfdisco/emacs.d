@@ -77,7 +77,8 @@ Save customizations in a separate file.
 
 Load existing customizations.
 #+BEGIN_SRC emacs-lisp
-(load custom-file)
+(when (file-exists-p custom-file)
+  (load custom-file))
 #+END_SRC
 
 ** Themes
@@ -153,11 +154,11 @@ Enable theme.
   "Enable theme Solarized.  Arguments are ignored."
   (enable-theme 'solarized))
 
-(add-hook 'after-make-frame-functions 'solarized-enable t)
-(add-hook 'window-setup-hook 'solarized-enable t)
-
-;; this should come at the very end
-(load-theme 'solarized t t)
+(when (memq 'solarized (custom-available-themes))
+  (add-hook 'after-make-frame-functions 'solarized-enable t)
+  (add-hook 'window-setup-hook 'solarized-enable t)
+  ;; this should come at the very end
+  (load-theme 'solarized t t))
 #+END_SRC
 
 ** Locale
