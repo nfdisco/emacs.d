@@ -1113,6 +1113,9 @@ dictionary globally with ~M-x ispell-change-dictionary~, or set the
 file-local variable ~po-subedit-ispell-dictionary~.
 
 #+BEGIN_SRC emacs-lisp
+(eval-when-compile
+  (load "po-mode"))                     ; avoid compiler warnings
+
 (with-eval-after-load 'po-mode
   (define-key po-mode-map [?i] 'po-ispell-msgstr))
 
