@@ -246,7 +246,7 @@ Remember search strings across sessions.
 (let ((variables '(search-ring regexp-search-ring)))
   (if (boundp 'savehist-additional-variables)
       (dolist (var variables)
-        (add-to-list savehist-additional-variables var))
+        (add-to-list 'savehist-additional-variables var))
     (setq savehist-additional-variables variables)))
 #+END_SRC
 
@@ -267,7 +267,7 @@ Uncomment to save the kill ring across sessions.
 ;; (let ((variables '(kill-ring)))
 ;;   (if (boundp 'savehist-additional-variables)
 ;;       (dolist (var variables)
-;;         (add-to-list savehist-additional-variables var))
+;;         (add-to-list 'savehist-additional-variables var))
 ;;     (setq savehist-additional-variables variables)))
 #+END_SRC
 
