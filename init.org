@@ -702,8 +702,11 @@ Sender name and address.
 
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name
-      (string 69 114 110 101 115 116 32
-              65 100 114 111 103 117 233))
+      (string 69
+              114 110
+              101 115 116
+              32 65 100 114
+              111 103 117 233))
 (setq user-mail-address
       (substring "foonr9@posteo.de" 3 nil))
 #+END_SRC
