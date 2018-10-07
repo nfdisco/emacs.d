@@ -221,8 +221,8 @@ Remember search strings across sessions.
     (setq savehist-additional-variables variables)))
 #+END_SRC
 
-Use ~C-p~, ~C-n~, ~M-p~ and ~M-n~ to navigate through minibuffer history while
-in the minibuffer.
+Type ~C-p~, ~C-n~ to navigate through the minibuffer history ring (~M-p~,
+~M-n~, matching the current input) while in the minibuffer.
 
 #+BEGIN_SRC emacs-lisp
 (let ((map minibuffer-local-map))
@@ -232,7 +232,7 @@ in the minibuffer.
   (define-key map [(control ?n)] 'next-history-element))
 #+END_SRC
 
-Uncomment the following to save the kill ring across sessions.
+Uncomment to save the kill ring across sessions.
 
 #+BEGIN_SRC emacs-lisp
 ;; (let ((variables '(kill-ring)))
@@ -242,7 +242,7 @@ Uncomment the following to save the kill ring across sessions.
 ;;     (setq savehist-additional-variables variables)))
 #+END_SRC
 
-Jump to last known point position when opening a file.
+Jump to the last known point position when opening a file.
 
 #+BEGIN_SRC emacs-lisp
 (require 'saveplace)
@@ -252,7 +252,7 @@ Jump to last known point position when opening a file.
 
 ** Visual elements
 
-Limit size of mini-windows to 2 lines.
+Limit size of mini-window to 2 lines.
 
 #+BEGIN_SRC emacs-lisp
 (setq max-mini-window-height 2)
@@ -282,8 +282,8 @@ Show tabs and trailing space by default, in whitespace mode.
 (setq whitespace-style '(face trailing tabs tab-mark))
 #+END_SRC
 
-Set the frame background mode according to the value of the
-variable ~background-mode~.  Some themes use different color schemes
+Change the frame background mode according to the value of the
+variable ~background-mode~.  Themes may use different color schemes
 depending on the value of this parameter.
 
 #+BEGIN_SRC emacs-lisp
@@ -313,41 +313,51 @@ depending on the value of this parameter.
 (add-hook 'after-make-frame-functions 'set-background-mode)
 #+END_SRC
 
-Set a light background both in graphic and in tty frames.
+Set background to "light" for tty frames.
 
 #+BEGIN_SRC emacs-lisp
-(setq background-mode '((graphic . light) (tty . light)))
+(add-to-list 'background-mode (cons 'tty 'light))
 #+END_SRC
 
-Set frame size, disable scrollbars, the toolbar and the menu bar.
-This overrides the settings from the X resource database.
+*** Graphic frames
+
+Set the default frame size.  Also, disable scrollbars, the toolbar and
+the menu bar.  This overrides X resource settings.
 
 #+BEGIN_SRC emacs-lisp
-(dolist (par '((height . 31)
-               (width . 81)
-               (vertical-scroll-bars . nil)
-               (horizontal-scroll-bars . nil)
-               (menu-bar-lines . 0)
-               (tool-bar-lines . 0)))
+(dolist (par (list
+              (cons 'height 31)
+              (cons 'width 81)
+              (cons 'vertical-scroll-bars nil)
+              (cons 'horizontal-scroll-bars nil)
+              (cons 'menu-bar-lines 0)
+              (cons 'tool-bar-lines 0)))
   (push par default-frame-alist))
 #+END_SRC
 
-Set title for graphic frames.  This overrides title setting from the X
-resource database.
+Set background to "light".
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'background-mode (cons 'graphic 'light))
+#+END_SRC
+
+Set frame (window) title.  This overrides X resource settings.
 
 #+BEGIN_SRC emacs-lisp
 (setq frame-title-format "%b - Emacs")
 #+END_SRC
 
-Use 11-point Monospace (that's the system's default monospace font)
-when running in a graphical frame on X11; use 11-point Consolas on MS
-Windows.  This overrides the font setting from the X resource
-database.
+In graphic frames, use 11 point Monospace for displaying text in the
+frame.  This overrides X resource settings.
 
 #+BEGIN_SRC emacs-lisp
 (setf (alist-get 'font (alist-get 'x window-system-default-frame-alist))
       "Monospace-11")
+#+END_SRC
 
+On Windows, use 11 point Consolas.
+
+#+BEGIN_SRC emacs-lisp
 (setf (alist-get 'font (alist-get 'w32 window-system-default-frame-alist))
       "Consolas-11")
 #+END_SRC
@@ -359,12 +369,16 @@ level.
 (setq x-underline-at-descent-line t)
 #+END_SRC
 
-Show buffer boundaries in the fringe (graphic frames only).
+Show buffer boundaries in the fringe.
 
 #+BEGIN_SRC emacs-lisp
 (setq-default
  indicate-buffer-boundaries
- '((top . left) (bottom . left) (up . right) (down . right)))
+ (list
+  (cons 'top 'left)
+  (cons 'bottom 'left)
+  (cons 'up 'right)
+  (cons 'down 'right)))
 #+END_SRC
 
 ** Verbosity
@@ -410,8 +424,7 @@ Type ~F5~ to revert/refresh the current buffer.
 
 *** Ido (Interactive Do)
 
-Enable file name and buffer name completion with ido (Interactive
-Do).
+Enable file name and buffer name completion with ido.
 
 #+BEGIN_SRC emacs-lisp
 (require 'ido)
@@ -419,27 +432,30 @@ Do).
 (ido-everywhere 1)
 #+END_SRC
 
-Uncomment to skip confirmation when creating new buffers -- it only
+Uncomment to skip confirmation when creating new buffers --- it only
 has effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
 
 #+BEGIN_SRC emacs-lisp
 ;; (setq ido-create-new-buffer 'always)
 #+END_SRC
 
-Cycle through suggestions with ~TAB~.
+Type ~TAB~ to cycle through suggestions.
 
 #+BEGIN_SRC emacs-lisp
 (setq ido-report-no-match nil)
 (setq ido-cannot-complete-command 'ido-next-match) ; cycle
 #+END_SRC
 
-Exclude dot files and files not in the current directory from the
-suggestions list.
+Exclude dot files from the suggestions list.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'ido
   (add-to-list 'ido-ignore-files "\\`\\."))
+#+END_SRC
 
+Exclude files not in the current directory from the suggestions list.
+
+#+BEGIN_SRC emacs-lisp
 (setq ido-auto-merge-work-directories-length -1)
 #+END_SRC
 
@@ -456,14 +472,14 @@ Match arbitrary substrings except when completing file names.
 (add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
 #+END_SRC
 
-Do not match dots in file names except at the beginning.  Currently
-commented out because it's redudant.
+Do not match dots in file names except at the beginning.  Commented
+out because it's redudant.
 
 #+BEGIN_SRC emacs-lisp
 ;; (setq ido-enable-dot-prefix t)
 #+END_SRC
 
-Re-bind ~C-p~ to ~previous-history-element~ for consistency -- also remap
+Re-bind ~C-p~ to ~previous-history-element~ for consistency.  Also remap
 ~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
 
 #+BEGIN_SRC emacs-lisp
@@ -516,7 +532,7 @@ Omit dot-files from directory listings.  Type ~C-x M-o~ to show them.
 *** Recent files
 
 Uncomment to keep a list of recently opened files.  Type ~M-x
-(recentf-cleanup)~ to clean up the list of recent files manually (i.e.,
+recentf-cleanup~ to clean up the list of recent files manually (i.e.,
 to remove duplicates, excluded files, and so on, from the list).
 
 #+BEGIN_SRC emacs-lisp
@@ -569,11 +585,11 @@ word at point.  This is the default.
 
 *** Mini-buffer
 
-To switch to the completion list buffer type ~M-v~ while in the
-mini-buffer.  This is the default.
+Type ~M-v~ while in the mini-buffer, to switch to the completion list
+buffer.  This is the default.
 
-In the completion list buffer, type ~p~ and ~n~ to jump to the previous
-and next item in the list.
+In the completion list buffer, type ~p~ and ~n~ to walk through the
+elements in the list.
 
 #+BEGIN_SRC emacs-lisp
 (let ((map completion-list-mode-map))
@@ -585,9 +601,16 @@ and next item in the list.
 Use the clipboard when cutting and pasting and not the primary
 selection.  This is the default.
 
+Uncomment to not use the clipboard.
+
 #+BEGIN_SRC emacs-lisp
-;; (setq select-enable-primary nil)
-;; (setq select-enable-clipboard t)
+;; (setq select-enable-clipboard nil)
+#+END_SRC
+
+Uncomment to use the primary selection.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq select-enable-primary t)
 #+END_SRC
 
 Paste at point position when yanking with the mouse, rather than at
@@ -599,15 +622,11 @@ click position.
 
 ** Text editing
 
-Type ~M-+~ (~delete-indentation~) to join the current line to the
-previous.
+Type ~M-+~ to join the current line to the previous.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key [(meta ?+)] 'delete-indentation)
 #+END_SRC
-
-Type ~M-q~ (~fill-paragraph~) to justify a paragraph.  (This is the
-default.)
 
 Wrap lines at 70 characters.
 
@@ -615,7 +634,7 @@ Wrap lines at 70 characters.
 (setq-default fill-column 70)
 #+END_SRC
 
-Type ~M-p~ and ~M-n~ to move the point backward and forward one paragraph.
+Type ~M-p~ and ~M-n~ to move the point backward and forward by paragraph.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key [(meta ?n)] 'forward-paragraph)
@@ -637,7 +656,7 @@ Use spaces for indentation.
 ** Spell-checking
 
 On Unix, use Hunspell to check spelling, with the British English
-dictionary as default.
+dictionary as the default.
 
 #+BEGIN_SRC emacs-lisp
 (unless windows-system-p
@@ -679,7 +698,7 @@ Type ~M-x ps-print-buffer~ to generate and print a PostScript image of
 the current buffer.  With the prefix argument ~C-u~, save the PostScript
 image to a file instead of printing.  This is the default.
 
-Print on A4 paper, in grayscale, in 10-point Courier.
+Print on A4 paper, grayscale, in 10 point Courier.
 
 #+BEGIN_SRC emacs-lisp
 (setq ps-paper-type 'a4)
@@ -1223,7 +1242,10 @@ Unbound keys in ES layout:
 - ~M-S-ç~
 - ~M-S-<a-z>~
 
-* Footer
+* File-local variables
+
+When saving this file, automatically write the Emacs Lisp code blocks
+in the Configuration section to the init file ~init.el~ and compile it.
 
 #+BEGIN_SRC emacs-lisp
 ;; Local Variables:
