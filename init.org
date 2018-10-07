@@ -15,6 +15,35 @@ Saving this file with Emacs will automatically generate the
 initialization file ~init.el~ and compile it.  To generate ~init.el~
 manually, type ~M-x org-babel-tangle~ in this buffer.
 
+* Notes
+
+** Keys
+
+In Emacs Lisp, key sequences can be represented in various forms (see
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Key-Sequences.html][Key Sequences]] in the GNU Emacs Lisp Reference manual).  In this file,
+we shall use the vector format, whereby key sequences are represented
+as ~[event1 event2 ...]~ where ~eventN~ is an event in Lisp form:
+- Single characters: ~?a~ ~?b~ ~?c~ ...
+- Event modifiers (escape format): ~\C-~ ~\M-~
+- Event modifiers (in lists): ~meta~ ~control~ ~shift~ ~hyper~ ~super~
+  ~alt~
+- Function keys: ~backspace~ ~tab~ ~newline~ ~return~ ~delete~ ~left~
+  ~up~ ~right~ ~down~ ~f1~ ~f2~ ~f3~ ...
+
+Examples: ~[(control ?x) ?l]~ (same as ~[?\C-x ?l]~), ~[backspace]~,
+~[(hyper left)]~ ...
+
+The following key sequences are not bound in GNU Emacs, by default:
+- ~M-+~
+- ~M-¡~
+- ~M-S-¡~
+- ~M-S-'~
+- ~M-ñ~
+- ~M-S-ñ~
+- ~M-ç~
+- ~M-S-ç~
+- ~M-S-<a-z>~
+
 * Configuration
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle yes
@@ -1199,49 +1228,6 @@ Type ~TAB~ to (un)fold Roxygen comments.
 #+BEGIN_SRC emacs-lisp
 (setq ess-roxy-hide-show-p t)
 #+END_SRC
-
-* Notes
-
-** DONE Key sequence formats
-See section "Key Sequences" in Emacs Lisp Reference manual.  Vector format
-is to be preferred.
-
-*** String format
-- Control and Meta character events: ~\C-~ ~\M-~
-- ~TAB~, ~RET~, ~ESC~, ~DEL~ evencts: ~\t~ ~\r~ ~\e~ ~\d~
-- Alphanumeric characters: ~a~ ~b~ ...
-
-Example: ~"\C-xl"~
-
-Sequences with non-ASCII characters or function keys cannot be represented
-as strings.
-
-*** Vector format
-Key sequences represented as ~[event1 event2 ...]~ where ~eventN~ is
-an event in Lisp form:
-
-- Single characters: ~?a~ ~?b~ ~?c~ ...
-- Event modifiers (escape format): ~\C-~ ~\M-~
-- Event modifiers (in lists): ~meta~ ~control~ ~shift~ ~hyper~ ~super~
-  ~alt~
-- Function keys: ~backspace~ ~tab~ ~newline~ ~return~ ~delete~ ~left~
-  ~up~ ~right~ ~down~ ~f1~ ~f2~ ~f3~ ...
-
-Examples: ~[(control ?x) ?l]~ (same as ~[?\C-x ?l]~), ~[backspace]~,
-~[(hyper left)]~ ...
-
-** TODO Unbound keys
-Unbound keys in ES layout:
-- ~M-+~
-- ~M-¡~
-- ~M-S-¡~
-- ~M-S-'~
-- ~M-ñ~
-- ~M-S-ñ~
-- ~M-ç~
-- ~M-S-ç~
-- ~M-S-<a-z>~
-
 * File-local variables
 
 When saving this file, automatically write the Emacs Lisp code blocks
