@@ -453,12 +453,12 @@ Type ~F5~ to revert/refresh the current buffer.
 
 *** Ido (Interactive Do)
 
-Enable file name and buffer name completion with ido.
+Uncomment to enable file name and buffer name completion with ido.
 
 #+BEGIN_SRC emacs-lisp
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
+;; (require 'ido)
+;; (ido-mode 1)
+;; (ido-everywhere 1)
 #+END_SRC
 
 Uncomment to skip confirmation when creating new buffers --- it only
