@@ -508,6 +508,12 @@ out because it's redudant.
 ;; (setq ido-enable-dot-prefix t)
 #+END_SRC
 
+Do not keep directory history.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-last-directory-history nil)
+#+END_SRC
+
 Re-bind ~C-p~ to ~previous-history-element~ for consistency.  Also remap
 ~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
 
