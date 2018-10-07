@@ -231,13 +231,18 @@ Remember minibuffer input across sessions.
 
 #+BEGIN_SRC emacs-lisp
 (savehist-mode 1)
-(setq history-length 20000)
 #+END_SRC
 
-Do not keep duplicated entries in the minibuffer history.
+Uncomment to increase the maximum length of history lists.
 
 #+BEGIN_SRC emacs-lisp
-(setq history-delete-duplicates t)
+;; (setq history-length 500)
+#+END_SRC
+
+Uncomment to remove duplicated entries from the minibuffer history.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq history-delete-duplicates t)
 #+END_SRC
 
 Remember search strings across sessions.
@@ -271,7 +276,7 @@ Jump to the last known point position when opening a file.
 #+BEGIN_SRC emacs-lisp
 (require 'saveplace)
 (save-place-mode)
-(setq save-place-limit 5000)
+(setq save-place-limit 1000)
 #+END_SRC
 
 ** Visual elements
