@@ -1119,6 +1119,10 @@ file-local variable ~po-subedit-ispell-dictionary~.
 (with-eval-after-load 'po-mode
   (define-key po-mode-map [?i] 'po-ispell-msgstr))
 
+(declare-function po-find-span-of-entry "po-mode")
+(declare-function po-edit-msgstr "po-mode")
+(declare-function po-subedit-abort "po-mode")
+
 (defun po-ispell-msgstr ()
   "Check message string for spelling errors."
   (interactive)
