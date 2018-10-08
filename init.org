@@ -373,7 +373,7 @@ Set background to "light".
 Set frame (window) title.  This overrides X resource settings.
 
 #+BEGIN_SRC emacs-lisp
-(setq frame-title-format "%b - Emacs")
+(setq frame-title-format (format "%%b - Emacs %s" emacs-version))
 #+END_SRC
 
 In graphic frames, use 11 point Monospace for displaying text in the
