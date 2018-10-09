@@ -432,13 +432,6 @@ Type ~C-x k~ to kill the current buffer.
 (global-set-key [(control ?x) ?k] 'kill-this-buffer)
 #+END_SRC
 
-Ignore case when completing file/buffer names
-
-#+BEGIN_SRC emacs-lisp
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-#+END_SRC
-
 Enable file-name shadowing in minibuffers.
 
 #+BEGIN_SRC emacs-lisp
@@ -449,84 +442,6 @@ Type ~F5~ to revert/refresh the current buffer.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key [f5] 'revert-buffer)
-#+END_SRC
-
-*** Ido (Interactive Do)
-
-Uncomment to enable file name and buffer name completion with ido.
-
-#+BEGIN_SRC emacs-lisp
-;; (require 'ido)
-;; (ido-mode 1)
-;; (ido-everywhere 1)
-#+END_SRC
-
-Uncomment to skip confirmation when creating new buffers --- it only
-has effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
-
-#+BEGIN_SRC emacs-lisp
-;; (setq ido-create-new-buffer 'always)
-#+END_SRC
-
-Type ~TAB~ to cycle through suggestions.
-
-#+BEGIN_SRC emacs-lisp
-(setq ido-report-no-match nil)
-(setq ido-cannot-complete-command 'ido-next-match) ; cycle
-#+END_SRC
-
-Exclude dot files from the suggestions list.
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'ido
-  (add-to-list 'ido-ignore-files "\\`\\."))
-#+END_SRC
-
-Exclude files not in the current directory from the suggestions list.
-
-#+BEGIN_SRC emacs-lisp
-(setq ido-auto-merge-work-directories-length -1)
-#+END_SRC
-
-Match arbitrary substrings except when completing file names.
-
-#+BEGIN_SRC emacs-lisp
-(setq ido-enable-prefix nil)            ; this is the default
-
-(defun ido-enable-prefix-if-file-dir ()
-  (defvar ido-cur-item)                 ; compiler warning
-  (when (memq ido-cur-item '(file dir))
-    (setq ido-enable-prefix t)))
-
-(add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
-#+END_SRC
-
-Do not match dots in file names except at the beginning.  Commented
-out because it's redudant.
-
-#+BEGIN_SRC emacs-lisp
-;; (setq ido-enable-dot-prefix t)
-#+END_SRC
-
-Do not keep directory history.
-
-#+BEGIN_SRC emacs-lisp
-(setq ido-enable-last-directory-history nil)
-#+END_SRC
-
-Re-bind ~C-p~ to ~previous-history-element~ for consistency.  Also remap
-~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
-
-#+BEGIN_SRC emacs-lisp
-;; this needs to be in a hook because ido-completion-map is created from
-;; scratch every time ido is invoked
-
-(defun remap-ido-toggle-prefix ()
-  (let ((map ido-common-completion-map))
-    (define-key map [(control ?o)] 'ido-toggle-prefix)
-    (define-key map [(control ?p)] 'previous-history-element)))
-
-(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
 #+END_SRC
 
 *** Dired
@@ -620,17 +535,125 @@ word at point.  This is the default.
 
 *** Mini-buffer
 
-Type ~M-v~ while in the mini-buffer, to switch to the completion list
-buffer.  This is the default.
+Ignore case when completing file/buffer names
 
-In the completion list buffer, type ~p~ and ~n~ to walk through the
-elements in the list.
+#+BEGIN_SRC emacs-lisp
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
+#+END_SRC
+
+When completing file names, exclude dot-files from the completion
+list, unless the file name being completed itself starts with a dot.
+
+#+BEGIN_SRC emacs-lisp
+(defun completion-f-n-table-ignoring-dot-prefix (fun str pred flag)
+  "Call `completion-file-name-table' with a predicate that
+ignores matches matches starting with a dot, unless STR starts
+with a dot."
+  (funcall fun str
+           (cond ((string-prefix-p "." (file-name-nondirectory str))
+                  pred)
+                 ((not pred)
+                  (lambda (str)
+                    (not (string-prefix-p "." str))))
+                 (t
+                  (lambda (str)
+                    (and (not (string-prefix-p "." str))
+                         (funcall pred str)))))
+           flag))
+
+(advice-add 'completion-file-name-table :around
+            'completion-f-n-table-ignoring-dot-prefix)
+#+END_SRC
+
+Type ~M-v~ while in the mini-buffer, to switch to the completion list
+buffer.  This is the default.  In the completion list buffer, type ~p~
+and ~n~ to walk through the elements in the list.
 
 #+BEGIN_SRC emacs-lisp
 (let ((map completion-list-mode-map))
   (define-key map [?p] 'previous-completion)
   (define-key map [?n] 'next-completion))
 #+END_SRC
+
+**** Ido (Interactive Do)
+
+Uncomment to enable file name and buffer name completion with ido.
+
+#+BEGIN_SRC emacs-lisp
+;; (require 'ido)
+;; (ido-mode 1)
+;; (ido-everywhere 1)
+#+END_SRC
+
+Uncomment to skip confirmation when creating new buffers --- it only
+has effect when ~confirm-nonexistent-file-or-buffer~ is ~nil~.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq ido-create-new-buffer 'always)
+#+END_SRC
+
+Type ~TAB~ to cycle through suggestions.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-report-no-match nil)
+(setq ido-cannot-complete-command 'ido-next-match) ; cycle
+#+END_SRC
+
+Exclude dot files from the suggestions list.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'ido
+  (add-to-list 'ido-ignore-files "\\`\\."))
+#+END_SRC
+
+Exclude files not in the current directory from the suggestions list.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-auto-merge-work-directories-length -1)
+#+END_SRC
+
+Match arbitrary substrings except when completing file names.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-prefix nil)            ; this is the default
+
+(defun ido-enable-prefix-if-file-dir ()
+  (defvar ido-cur-item)                 ; compiler warning
+  (when (memq ido-cur-item '(file dir))
+    (setq ido-enable-prefix t)))
+
+(add-hook 'ido-setup-hook 'ido-enable-prefix-if-file-dir)
+#+END_SRC
+
+Do not match dots in file names except at the beginning.  Commented
+out because it's redudant.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq ido-enable-dot-prefix t)
+#+END_SRC
+
+Do not keep directory history.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-last-directory-history nil)
+#+END_SRC
+
+Re-bind ~C-p~ to ~previous-history-element~ for consistency.  Also remap
+~ido-toggle-prefix~ (bound to ~C-p~ by default) to ~C-o~.
+
+#+BEGIN_SRC emacs-lisp
+;; this needs to be in a hook because ido-completion-map is created from
+;; scratch every time ido is invoked
+
+(defun remap-ido-toggle-prefix ()
+  (let ((map ido-common-completion-map))
+    (define-key map [(control ?o)] 'ido-toggle-prefix)
+    (define-key map [(control ?p)] 'previous-history-element)))
+
+(add-hook 'ido-setup-hook 'remap-ido-toggle-prefix)
+#+END_SRC
+
 ** Clipboard and primary selection
 
 Use the clipboard when cutting and pasting and not the primary
