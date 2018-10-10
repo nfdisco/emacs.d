@@ -543,10 +543,15 @@ word at point.  This is the default.
 
 *** Mini-buffer
 
-Ignore case when completing file/buffer names
+Ignore case when completing file names
 
 #+BEGIN_SRC emacs-lisp
 (setq read-file-name-completion-ignore-case t)
+#+END_SRC
+
+Ignore case when completing buffer names
+
+#+BEGIN_SRC emacs-lisp
 (setq read-buffer-completion-ignore-case t)
 #+END_SRC
 
