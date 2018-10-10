@@ -107,13 +107,15 @@ will not prevent Emacs from loading an obsolete ~./init.elc~.
 
 ** Customizations
 
-Save customizations in a separate file.
+Store customizations in a separate file.
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setq custom-file (expand-file-name
+                   "customizations" user-emacs-directory))
 #+END_SRC
 
 Load existing customizations.
+
 #+BEGIN_SRC emacs-lisp
 (when (file-exists-p custom-file)
   (load custom-file))
