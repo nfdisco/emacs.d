@@ -840,15 +840,14 @@ Archive subtrees in a separate file.
 (setq org-archive-location "%s-archive::")
 #+END_SRC
 
-Read capture and structure templates from ~~/.emacs.d/org-templates.el~.
+Read capture and structure templates from the ~templates~ file in the
+Org directory.
 
 #+BEGIN_SRC emacs-lisp
-(let ((org-templates-file
-       (expand-file-name "org-templates.el"
-                         user-emacs-directory)))
-  (when (and org-templates-file
-             (file-exists-p org-templates-file))
-    (load-file org-templates-file)))
+(let ((f (concat (file-name-as-directory org-directory)
+                 "templates")))
+  (when (file-exists-p f)
+    (load-file f)))
 #+END_SRC
 
 Automatically fold tree when opening a file.
