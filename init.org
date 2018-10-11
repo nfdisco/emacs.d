@@ -814,7 +814,7 @@ Enable auto-filling.
 
 *** Org mode
 
-Look for org files in the =~/doc/org= directory.
+Look for Org files in the =~/doc/org= directory.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-directory (expand-file-name "~/doc/org"))
@@ -826,10 +826,12 @@ By default, save notes in the ~todo.org~ file.
 (setq org-default-notes-file "todo.org")
 #+END_SRC
 
-Get a list of agenda files from the ~agenda-files~ file.
+Add the Org directory to the list of agenda files.  Notice that files
+not ending with the extension ~.org~ are ignored.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files (expand-file-name "agenda-files" org-directory))
+(when (boundp org-agenda-files)
+  (add-to-list 'org-agenda-files org-directory))
 #+END_SRC
 
 Archive subtrees in a separate file.
