@@ -123,22 +123,32 @@ Load existing customizations.
 
 ** Themes
 
-Look for and save custom themes in the ~themes/~ subdirectory under the
-user's Emacs directory.
+Store custom themes in the ~themes/~ directory under the user's Emacs
+directory.
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
+(setq custom-theme-directory
+      (expand-file-name "themes" user-emacs-directory))
+#+END_SRC
+
+Add any subdirectory under the themes directory to the theme search
+path.  Subdirectories whose names start with a dot are ignored.
+
+#+BEGIN_SRC emacs-lisp
+(when (and (boundp 'custom-theme-load-path)
+           (file-directory-p custom-theme-directory))
+  (dolist (f (directory-files custom-theme-directory t "^[^.]"))
+    (when (file-directory-p f)
+      (add-to-list 'custom-theme-load-path (file-name-as-directory f)))))
 #+END_SRC
 
 *** Solarized
 
-For technical details about this theme, see the [[https://ethanschoonover.com/solarized][theme's homepage]].
-
-Add the theme's subdirectory to the search path.
+Uncomment to add the theme's subdirectory to the search path.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "solarized" custom-theme-directory))
+;; (add-to-list 'custom-theme-load-path
+;;              (expand-file-name "solarized" custom-theme-directory))
 #+END_SRC
 
 Override face difinitions with our own.  
