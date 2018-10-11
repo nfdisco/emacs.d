@@ -15,3 +15,7 @@ filesets-cache.el
 elpa
 org-templates.el
 slime
+/customizations
+/*~
+/network-security.data
+/games/
