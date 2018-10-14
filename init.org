@@ -830,8 +830,9 @@ Add the Org directory to the list of agenda files.  Notice that files
 not ending with the extension ~.org~ are ignored.
 
 #+BEGIN_SRC emacs-lisp
-(when (boundp org-agenda-files)
-  (add-to-list 'org-agenda-files org-directory))
+  (with-eval-after-load "org"
+    (when (listp org-agenda-files)
+      (add-to-list 'org-agenda-files org-directory)))
 #+END_SRC
 
 Archive subtrees in a separate file.
