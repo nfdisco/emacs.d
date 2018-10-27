@@ -1076,10 +1076,12 @@ Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
 current input.
 
 #+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'comint-mode
-  (let ((map comint-mode-map))
-    (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
-    (define-key map [(meta ?n)] 'comint-next-matching-input-from-input)))
+(add-hook
+ 'comint-mode-hook
+ (lambda ()
+   (let ((map comint-mode-map))
+     (define-key map [(meta ?p)] 'comint-previous-matching-input-from-input)
+     (define-key map [(meta ?n)] 'comint-next-matching-input-from-input))))
 #+END_SRC
 
 *** Gettext (PO mode)
