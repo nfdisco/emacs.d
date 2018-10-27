@@ -1072,6 +1072,12 @@ Enable TeX-fold minor mode.
 
 *** Comint
 
+Read-only prompt.
+
+#+BEGIN_SRC emacs-lisp
+(setq comint-prompt-read-only t)
+#+END_SRC
+
 Type ~M-p~ and ~M-n~ to walk through the history ring, matching the
 current input.
 
