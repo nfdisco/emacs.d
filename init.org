@@ -702,6 +702,18 @@ Type ~M-+~ to join the current line to the previous.
 (global-set-key [(meta ?+)] 'delete-indentation)
 #+END_SRC
 
+Type ~M-'~ to delete horizontal whitespace.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [(meta ?')] 'delete-horizontal-space)
+#+END_SRC
+
+Type ~M-¡~ to delete blank lines.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [(meta ?¡)] 'delete-blank-lines)
+#+END_SRC
+
 Wrap lines at 70 characters.
 
 #+BEGIN_SRC emacs-lisp
