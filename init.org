@@ -963,15 +963,6 @@ Uncomment to enable evaluation of Emacs Lisp and Unix shell blocks.
 
 *** AUCTeX
 
-Load AUCTeX manually.  This is necessary on Debian until bug [[https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=915327][915327]] is
-fixed.
-
-#+BEGIN_SRC emacs-lisp
-(unless windows-system-p
-  (load "auctex.el")
-  (load "preview-latex.el"))
-#+END_SRC 
-
 Use the XeTeX engine.
 
 #+BEGIN_SRC emacs-lisp
