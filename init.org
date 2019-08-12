@@ -853,12 +853,12 @@ Archive subtrees in a separate file.
 (setq org-archive-location "%s-archive::")
 #+END_SRC
 
-Read capture and structure templates from the ~templates~ file in the
+Read capture and structure templates from the ~templates.el~ file in the
 Org directory.
 
 #+BEGIN_SRC emacs-lisp
 (let ((f (concat (file-name-as-directory org-directory)
-                 "templates")))
+                 "templates.el")))
   (when (file-exists-p f)
     (load-file f)))
 #+END_SRC
