@@ -353,10 +353,10 @@ depending on the value of this parameter.
 (add-hook 'after-make-frame-functions 'set-background-mode)
 #+END_SRC
 
-Set background to "light" for tty frames.
+Set background to "dark" for tty frames.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'background-mode (cons 'tty 'light))
+(add-to-list 'background-mode (cons 'tty 'dark))
 #+END_SRC
 
 *** Graphic frames
@@ -375,10 +375,10 @@ the menu bar.  This overrides X resource settings.
   (push par default-frame-alist))
 #+END_SRC
 
-Set background to "light".
+Set background to "dark".
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'background-mode (cons 'graphic 'light))
+(add-to-list 'background-mode (cons 'graphic 'dark))
 #+END_SRC
 
 Set frame (window) title.  This overrides X resource settings.
