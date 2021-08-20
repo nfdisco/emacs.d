@@ -356,7 +356,7 @@ depending on the value of this parameter.
 Set background to "dark" for tty frames.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'background-mode (cons 'tty 'dark))
+(add-to-list 'background-mode (cons 'tty 'light))
 #+END_SRC
 
 *** Graphic frames
@@ -375,10 +375,10 @@ the menu bar.  This overrides X resource settings.
   (push par default-frame-alist))
 #+END_SRC
 
-Set background to "dark".
+Set background to "light".
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'background-mode (cons 'graphic 'dark))
+(add-to-list 'background-mode (cons 'graphic 'light))
 #+END_SRC
 
 Set frame (window) title.  This overrides X resource settings.
