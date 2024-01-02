@@ -189,6 +189,14 @@ Uncomment to stop Solarized from displaying bold.
 ;; (setq solarized-bold nil)
 #+END_SRC
 
+Use 256 colours in terminals that support 256 colours.
+
+#+BEGIN_SRC emacs-lisp
+(let ((term (getenv-internal "TERM" initial-environment)))                      
+  (cond ((string= term "xterm-256color")                                        
+         (setq solarized-termcolors 256))))
+#+END_SRC
+
 Enable theme, if it's available.
 
 #+BEGIN_SRC emacs-lisp
